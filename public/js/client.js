@@ -106,7 +106,7 @@ TrelloPowerUp.initialize({
       callback: function(t) {
         return t.popup({
           title: 'Habitica settings',
-          url: './settings.html',
+          url: './settings.html', // Check out public/authorize.html to see how to ask a user to auth
           height: 240,
         });
       }
@@ -120,8 +120,8 @@ TrelloPowerUp.initialize({
       return [
         {
           title: 'Habitica',
-            text: habiticaId ? 'Remove' : 'Add',
-            callback: habiticaId ? h.removeTodo : h.addTodo
+          text: habiticaId ? 'Remove' : 'Add',
+          callback: habiticaId ? h.removeTodo : h.addTodo
         }
       ]
     });
