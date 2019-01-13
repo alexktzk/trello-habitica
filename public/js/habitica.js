@@ -1,4 +1,25 @@
 var h = habitica = ({
+  api: 'https://habitica.com/api/v3',
+  request: (t, callback) => (
+    h.withHeaders(t, headers => (
+      callback(
+        axios.create({
+          baseURL: h.api,
+          timeout: 10000,
+          headers: headers
+        })
+      )
+    ))
+  ),
+  withHeaders: (t, callback) => (
+    t.get('member', 'private').then(member => (
+      callback({
+        'x-api-user': member.userId,
+        'x-api-key': member.apiToken,
+        'Content-Type': 'application/json'
+      })
+    ))
+  ),
   addTodo: t => (
     t.set('card', 'private', {
       habiticaId: new Date().getTime()
