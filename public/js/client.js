@@ -113,6 +113,7 @@ TrelloPowerUp.initialize({
     }];
   },
   'card-badges': function(t, options){
+    h.sync(t);
     return getBadges(t);
   },
   'card-detail-badges': function(t, options) {
@@ -129,11 +130,11 @@ TrelloPowerUp.initialize({
   'list-actions': function(t) {
     return t.get('board', 'private', 'habiticaSyncedLists', {}).then(function (syncedLists) {
       return t.list('id').then(function(list) {
-        var isSynced = !!syncedLists[list.id];
+        var isListSynced = !!syncedLists[list.id];
 
         return [{
-          text: isSynced ? "Unsync Habitica" : "Sync Habitica",
-          callback: isSynced ? h.unsyncList : h.syncList
+          text: isListSynced ? 'Unsync list with Habitica' : 'Sync list with Habitica',
+          callback: isListSynced ? h.unsyncList : h.syncList
         }];
       })
     })
