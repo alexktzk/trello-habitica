@@ -127,7 +127,7 @@ TrelloPowerUp.initialize({
     });
   },
   'list-actions': function(t) {
-    return t.get('board', 'private', 'habiticaListIds', {}).then(function (syncedLists) {
+    return t.get('board', 'private', 'habiticaSyncedLists', {}).then(function (syncedLists) {
       return t.list('id').then(function(list) {
         var isSynced = !!syncedLists[list.id];
 
