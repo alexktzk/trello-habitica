@@ -1,7 +1,7 @@
 var h = habitica = ({
   api: 'https://habitica.com/api/v3',
-  request: (t, callback) => (
-    h.withHeaders(t, headers => (
+  request: (t, callback) => {
+    return h.withHeaders(t, headers => (
       callback(
         axios.create({
           baseURL: h.api,
@@ -10,26 +10,51 @@ var h = habitica = ({
         })
       )
     ))
-  ),
-  withHeaders: (t, callback) => (
-    t.get('member', 'private').then(member => (
+  },
+  withHeaders: (t, callback) => {
+    return t.get('member', 'private').then(member => (
       callback({
         'x-api-user': member.userId,
         'x-api-key': member.apiToken,
         'Content-Type': 'application/json'
       })
     ))
-  ),
+  },
   addTodo: t => (
-    t.set('card', 'private', {
-      habiticaId: new Date().getTime()
-    })
+    h.request(t, (http) => (
+      t.card('name').then(card => {
+        http.post('/tasks/user', {
+          type: 'todo',
+          text: card.name
+        })
+        .then((res) => res.data)
+        .then((res) => {
+          return t.set('card', 'private', {
+            habiticaId: res.data.id
+          });
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+      })
+    ))
   ),
-  removeTodo: t => (
-    t.set('card', 'private', {
-      habiticaId: null
-    })
-  ),
+  removeTodo: t => {
+    h.request(t, (http) => (
+      t.get('card', 'private').then(cardStorage => (
+        http.delete(`/tasks/${cardStorage.habiticaId}`)
+          .then((res) => res.data)
+          .then((res) => {
+            return t.set('card', 'private', {
+              habiticaId: null
+            })
+          })
+          .catch((error) => {
+            console.error(error)
+          })
+      ))
+    ))
+  },
   sync: t => (
     t.get('board', 'private', 'habiticaSyncedLists', {}).then(syncedLists => (
       t.card('id', 'idList').then(card => (
