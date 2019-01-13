@@ -1,7 +1,7 @@
 /* global TrelloPowerUp */
 
 // we can access Bluebird Promises as follows
-var Promise = TrelloPowerUp.Promise;
+var Promise = TrelloPowerUp.Promise
 
 /*
 
@@ -50,47 +50,47 @@ Also keep in mind storing at the 'organization' scope will only work if the acti
 
 Information that is private to the current user, such as tokens should be stored using 'private' at the 'member' scope
 
-t.set('organization', 'private', 'key', 'value');
-t.set('board', 'private', 'key', 'value');
-t.set('card', 'private', 'key', 'value');
-t.set('member', 'private', 'key', 'value');
+t.set('organization', 'private', 'key', 'value')
+t.set('board', 'private', 'key', 'value')
+t.set('card', 'private', 'key', 'value')
+t.set('member', 'private', 'key', 'value')
 
 Information that should be available to all users of the Power-Up should be stored as 'shared'
 
-t.set('organization', 'shared', 'key', 'value');
-t.set('board', 'shared', 'key', 'value');
-t.set('card', 'shared', 'key', 'value');
-t.set('member', 'shared', 'key', 'value');
+t.set('organization', 'shared', 'key', 'value')
+t.set('board', 'shared', 'key', 'value')
+t.set('card', 'shared', 'key', 'value')
+t.set('member', 'shared', 'key', 'value')
 
 If you want to set multiple keys at once you can do that like so
 
-t.set('board', 'shared', { key: value, extra: extraValue });
+t.set('board', 'shared', { key: value, extra: extraValue })
 
 Reading back your data is as simple as
 
-t.get('organization', 'shared', 'key');
+t.get('organization', 'shared', 'key')
 
 Or want all in scope data at once?
 
-t.getAll();
+t.getAll()
 
 */
 
-var GLITCH_ICON = 'https://cdn.glitch.com/2442c68d-7b6d-4b69-9d13-feab530aa88e%2Fglitch-icon.svg?1489773457908';
-var GRAY_ICON = 'https://cdn.hyperdev.com/us-east-1%3A3d31b21c-01a0-4da2-8827-4bc6e88b7618%2Ficon-gray.svg';
-var WHITE_ICON = 'https://cdn.hyperdev.com/us-east-1%3A3d31b21c-01a0-4da2-8827-4bc6e88b7618%2Ficon-white.svg';
-var HABITICA_ICON = 'https://cdn.glitch.com/project-avatar/71dc7d01-6387-43b0-b720-e9d264da3a8e.png';
+var GLITCH_ICON = 'https://cdn.glitch.com/2442c68d-7b6d-4b69-9d13-feab530aa88e%2Fglitch-icon.svg?1489773457908'
+var GRAY_ICON = 'https://cdn.hyperdev.com/us-east-1%3A3d31b21c-01a0-4da2-8827-4bc6e88b7618%2Ficon-gray.svg'
+var WHITE_ICON = 'https://cdn.hyperdev.com/us-east-1%3A3d31b21c-01a0-4da2-8827-4bc6e88b7618%2Ficon-white.svg'
+var HABITICA_ICON = 'https://cdn.glitch.com/project-avatar/71dc7d01-6387-43b0-b720-e9d264da3a8e.png'
 
 
 
-var getBadges = function(t){
-  return t.get('card', 'private').then(function (cardStorage) {
-    return [{
+var getBadges = t => (
+  t.get('card', 'private').then(cardStorage => (
+    [{
       // icon: habiticaSyncStatus && habiticaId ? HABITICA_ICON : null // for card front badges only
       icon: cardStorage.habiticaId ? HABITICA_ICON : null // for card front badges only
-    }];
-  })
-};
+    }]
+  ))
+)
 
 // We need to call initialize to get all of our capability handles set up and registered with Trello
 TrelloPowerUp.initialize({
@@ -98,57 +98,54 @@ TrelloPowerUp.initialize({
   // If you need to make an asynchronous request or action before you can reply to Trello
   // you can return a Promise (bluebird promises are included at TrelloPowerUp.Promise)
   // The Promise should resolve to the object type that is expected to be returned
-  'board-buttons': function(t, options){
-    return [
-    {
+  'board-buttons': (t, options) => (
+    [{
       icon: HABITICA_ICON,
       text: 'Settings',
-      callback: function(t) {
-        return t.popup({
+      callback: t => (
+        t.popup({
           title: 'Habitica settings',
           url: './settings.html', // Check out public/authorize.html to see how to ask a user to auth
           height: 240,
-        });
-      }
-    }];
+        })
+      )
+    }]
+  ),
+  'card-badges': (t, options) => {
+    h.sync(t)
+    return getBadges(t)
   },
-  'card-badges': function(t, options){
-    h.sync(t);
-    return getBadges(t);
-  },
-  'card-detail-badges': function(t, options) {
-    return t.get('card', 'private', 'habiticaId').then(function(habiticaId) {
-      return [
-        {
-          title: 'Habitica',
-          text: habiticaId ? 'Remove' : 'Add',
-          callback: habiticaId ? h.removeTodo : h.addTodo
-        }
-      ]
-    });
-  },
-  'list-actions': function(t) {
-    return t.get('board', 'private', 'habiticaSyncedLists', {}).then(function (syncedLists) {
-      return t.list('id').then(function(list) {
-        var isListSynced = !!syncedLists[list.id];
+  'card-detail-badges': (t, options) => (
+    t.get('card', 'private', 'habiticaId').then(habiticaId => (
+      [{
+        title: 'Habitica',
+        text: habiticaId ? 'Remove' : 'Add',
+        callback: habiticaId ? h.removeTodo : h.addTodo
+      }]
+    ))
+  ),
+  'list-actions': t => (
+    t.get('board', 'private', 'habiticaSyncedLists', {}).then(syncedLists => (
+      t.list('id').then(list => {
+        var isListSynced = !!syncedLists[list.id]
 
         return [{
           text: isListSynced ? 'Unsync list with Habitica' : 'Sync list with Habitica',
           callback: isListSynced ? h.unsyncList : h.syncList
-        }];
+        }]
       })
-    })
-  },
-  'show-settings': function(t, options){
+    ))
+  ),
+  'show-settings': (t, options) => (
     // when a user clicks the gear icon by your Power-Up in the Power-Ups menu
     // what should Trello show. We highly recommend the popup in this case as
     // it is the least disruptive, and fits in well with the rest of Trello's UX
-    return t.popup({
+    t.popup({
       title: 'Settings',
       url: './settings.html',
       height: 184 // we can always resize later, but if we know the size in advance, its good to tell Trello
-    });
-  },
+    })
+  ),
   
   /*        
       
@@ -159,7 +156,7 @@ TrelloPowerUp.initialize({
       2. what to do when a user isn't completely authorized
       
   */
-  'authorization-status': function(t, options){
+  'authorization-status': (t, options) => (
     // Return a promise that resolves to an object with a boolean property 'authorized' of true or false
     // The boolean value determines whether your Power-Up considers the user to be authorized or not.
     
@@ -168,24 +165,24 @@ TrelloPowerUp.initialize({
     // below determines what should happen when the user clicks "Authorize Account"
     
     // For instance, if your Power-Up requires a token to be set for the member you could do the following:
-    return t.get('member', 'private', 'token')
+    t.get('member', 'private', 'token')
     // Or if you needed to set/get a non-Trello secret token, like an oauth token, you could
     // use t.storeSecret('key', 'value') and t.loadSecret('key')
-    .then(function(token){
+    .then(token => {
       if(token){
-        return { authorized: true };
+        return { authorized: true }
       }
-      return { authorized: false };
-    });
+      return { authorized: false }
+    })
     // You can also return the object synchronously if you know the answer synchronously.
-  },
-  'show-authorization': function(t, options){
+  ),
+  'show-authorization': (t, options) => {
     // Returns what to do when a user clicks the 'Authorize Account' link from the Power-Up gear icon
     // which shows when 'authorization-status' returns { authorized: false }.
     
     // If we want to ask the user to authorize our Power-Up to make full use of the Trello API
     // you'll need to add your API from trello.com/app-key below:
-    let trelloAPIKey = '';
+    let trelloAPIKey = ''
     // This key will be used to generate a token that you can pass along with the API key to Trello's
     // RESTful API. Using the key/token pair, you can make requests on behalf of the authorized user.
     
@@ -196,11 +193,11 @@ TrelloPowerUp.initialize({
         args: { apiKey: trelloAPIKey }, // Pass in API key to the iframe
         url: './authorize.html', // Check out public/authorize.html to see how to ask a user to auth
         height: 140,
-      });
+      })
     } else {
-      console.log("🙈 Looks like you need to add your API key to the project!");
+      console.log("🙈 Looks like you need to add your API key to the project!")
     }
   }
-});
+})
 
-console.log('Loaded by: ' + document.referrer);
+console.log('Loaded by: ' + document.referrer)

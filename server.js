@@ -15,7 +15,7 @@ app.use(compression());
 app.use(cors({ origin: 'https://trello.com' }));
 
 // https://github.com/mingchen/node-nocache
-app.use('/manifest.json', nocache, function (request, response) {
+app.use('/manifest.json', nocache, (request, response) => {
   response.sendFile(__dirname + '/public/manifest.json');
 });
 
@@ -23,7 +23,7 @@ app.use('/manifest.json', nocache, function (request, response) {
 app.use(express.static('public'));
 
 // listen for requests :)
-var listener = app.listen(process.env.PORT, function () {
+var listener = app.listen(process.env.PORT, () => {
   console.info(`Node Version: ${process.version}`);
   console.log('Trello Power-Up Server listening on port ' + listener.address().port);
 });
