@@ -1,28 +1,41 @@
+<!DOCTYPE html>
 <html>
   <head>
     <link rel="stylesheet" href="https://p.trellocdn.com/power-up.min.css">
     <script src="https://p.trellocdn.com/power-up.min.js"></script>
   </head>
   <body>
-    <div id="content">
-      <p>Shared - Select a fruit</p>
-      <select id="fruit">
-        <option value="apple">Apple</option>
-        <option value="banana">Banana</option>
-        <option value="date">Date</option>
-        <option value="lemon">Lemon</option>
-        <option value="pineapple">Pineapple</option>
-      </select>
-      <p>Private - Select a vegetable</p>
-      <select id="vegetable">
-        <option value="broccoli">Broccoli</option>
-        <option value="corn">Corn</option>
-        <option value="kale">Kale</option>
-        <option value="onion">Onion</option>
-        <option value="spinach">Spinach</option>
-      </select>
-      <button id="save" class="mod-primary">Save</button>
-    </div>
-    <script src="./js/settings.js"></script>
+    <h3>
+      Habitica credentials
+    </h3>
+    <p>
+    </p>
+    <input id="user-id" type="text" placeholder="User ID">
+    <input id="api-token" type="password" placeholder="API Token">
+    <button id="submit-btn" type="submit" class="mod-primary">Save</button>
+  
+    <script>
+      var t = TrelloPowerUp.iframe();
+      var $userId = document.getElementById('user-id');
+      var $apiToken = document.getElementById('api-token');
+
+      // initialize fields with values from storage
+      t.get('member', 'private', 'userId').then(val => $userId.value = val);
+      t.get('member', 'private', 'apiToken').then(val => $apiToken.value = val);;
+
+      document.getElementById('submit-btn').addEventListener('click', function () {
+        var credentials = {
+          userId: $userId.value,
+          apiToken: $apiToken.value
+        };
+
+        t.set('member', 'private', credentials)
+          .then(function () {
+            // now that we have the token we needed lets go on to letting
+            // the user do whatever they need to do.
+            return t.closePopup();
+          });
+      });
+    </script>
   </body>
 </html>
