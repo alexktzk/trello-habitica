@@ -1,4 +1,4 @@
-var h = habitica = ({
+let h = habitica = ({
   loading: {},
   api: 'https://habitica.com/api/v3',
   request: (t, callback) => (
@@ -67,7 +67,7 @@ var h = habitica = ({
     t.get('board', 'private', 'habiticaSyncedLists', {}).then(syncedLists => (
       t.card('id', 'idList').then(card => (
         t.get('card', 'private').then(cardStorage => {
-          var isListSynced = syncedLists[card.idList]
+          let isListSynced = syncedLists[card.idList]
 
           if (!isListSynced) {
             cardStorage.habiticaId && h.removeTodo(t)

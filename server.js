@@ -1,12 +1,12 @@
 // server.js
 // where your node app starts
 
-var compression = require('compression');
-var cors = require('cors');
-var express = require('express');
-var nocache = require('node-nocache');
+let compression = require('compression');
+let cors = require('cors');
+let express = require('express');
+let nocache = require('node-nocache');
 
-var app = express();
+let app = express();
 
 // compress our client side content before sending it over the wire
 app.use(compression());
@@ -23,7 +23,7 @@ app.use('/manifest.json', nocache, (request, response) => {
 app.use(express.static('public'));
 
 // listen for requests :)
-var listener = app.listen(process.env.PORT, () => {
+let listener = app.listen(process.env.PORT, () => {
   console.info(`Node Version: ${process.version}`);
   console.log('Trello Power-Up Server listening on port ' + listener.address().port);
 });

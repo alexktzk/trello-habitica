@@ -1,7 +1,7 @@
 /* global TrelloPowerUp */
 
 // we can access Bluebird Promises as follows
-var Promise = TrelloPowerUp.Promise
+let Promise = TrelloPowerUp.Promise
 
 /*
 
@@ -76,14 +76,9 @@ t.getAll()
 
 */
 
-var GLITCH_ICON = 'https://cdn.glitch.com/2442c68d-7b6d-4b69-9d13-feab530aa88e%2Fglitch-icon.svg?1489773457908'
-var GRAY_ICON = 'https://cdn.hyperdev.com/us-east-1%3A3d31b21c-01a0-4da2-8827-4bc6e88b7618%2Ficon-gray.svg'
-var WHITE_ICON = 'https://cdn.hyperdev.com/us-east-1%3A3d31b21c-01a0-4da2-8827-4bc6e88b7618%2Ficon-white.svg'
-var HABITICA_ICON = 'https://cdn.glitch.com/project-avatar/71dc7d01-6387-43b0-b720-e9d264da3a8e.png'
+let HABITICA_ICON = 'https://cdn.glitch.com/project-avatar/71dc7d01-6387-43b0-b720-e9d264da3a8e.png'
 
-
-
-var getBadges = t => (
+let getBadges = t => (
   t.get('card', 'private').then(cardStorage => (
     [{
       // icon: habiticaSyncStatus && habiticaId ? HABITICA_ICON : null // for card front badges only
@@ -127,7 +122,7 @@ TrelloPowerUp.initialize({
   'list-actions': t => (
     t.get('board', 'private', 'habiticaSyncedLists', {}).then(syncedLists => (
       t.list('id').then(list => {
-        var isListSynced = !!syncedLists[list.id]
+        let isListSynced = !!syncedLists[list.id]
 
         return [{
           text: isListSynced ? 'Unsync list with Habitica' : 'Sync list with Habitica',

@@ -15,16 +15,16 @@
     <button id="submit-btn" type="submit" class="mod-primary">Save</button>
   
     <script>
-      var t = TrelloPowerUp.iframe()
-      var $userId = document.getElementById('user-id')
-      var $apiToken = document.getElementById('api-token')
+      let t = TrelloPowerUp.iframe()
+      let $userId = document.getElementById('user-id')
+      let $apiToken = document.getElementById('api-token')
 
       // initialize fields with values from storage
       t.get('member', 'private', 'userId').then(val => $userId.value = val)
       t.get('member', 'private', 'apiToken').then(val => $apiToken.value = val)
 
       document.getElementById('submit-btn').addEventListener('click', () => {
-        var credentials = {
+        let credentials = {
           userId: $userId.value,
           apiToken: $apiToken.value
         }
