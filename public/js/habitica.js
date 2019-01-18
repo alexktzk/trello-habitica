@@ -61,6 +61,32 @@ let h = habitica = ({
       ))
     ))
   ),
+  doTask: t => (
+    h.request(t, (http) => (
+      t.get('card', 'private', 'task').then(task => (
+        http.post(`/tasks/${task.id}/score/up`)
+          .then(_ => (
+            t.set('card', 'private', 'task', Object.assign({}, task, {
+              done: true
+            }))
+          ))
+          .catch(error => console.error(error))
+      ))
+    ))
+  ),
+  undoTask: t => (
+    h.request(t, (http) => (
+      t.get('card', 'private', 'task').then(task => (
+        http.post(`/tasks/${task.id}/score/down`)
+          .then(_ => (
+            t.set('card', 'private', 'task', Object.assign({}, task, {
+              done: false
+            }))
+          ))
+          .catch(error => console.error(error))
+      ))
+    ))
+  ),
   sync: t => (
     t.get('board', 'private', 'habiticaSyncedLists', {}).then(syncedLists => (
       t.card('id', 'idList').then(card => (
