@@ -79,10 +79,10 @@ t.getAll()
 let HABITICA_ICON = 'https://cdn.glitch.com/project-avatar/71dc7d01-6387-43b0-b720-e9d264da3a8e.png'
 
 let getBadges = t => (
-  t.get('card', 'private').then(cardStorage => (
+  t.get('card', 'private', 'task', {}).then(task => (
     [{
       // icon: habiticaSyncStatus && habiticaId ? HABITICA_ICON : null // for card front badges only
-      icon: cardStorage.habiticaId ? HABITICA_ICON : null // for card front badges only
+      icon: task.id ? HABITICA_ICON : null // for card front badges only
     }]
   ))
 )
@@ -111,11 +111,11 @@ TrelloPowerUp.initialize({
     return getBadges(t)
   },
   'card-detail-badges': (t, options) => (
-    t.get('card', 'private', 'habiticaId').then(habiticaId => (
+    t.get('card', 'private', 'task', {}).then(habiticaId => (
       [{
         title: 'Habitica',
-        text: habiticaId ? 'Remove' : 'Add',
-        callback: habiticaId ? h.removeTodo : h.addTodo
+        text: task.id ? 'Remove' : 'Add',
+        callback: task.id ? h.removeTask : h.addTask
       }]
     ))
   ),

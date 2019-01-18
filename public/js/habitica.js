@@ -33,7 +33,7 @@ let h = habitica = ({
       })
     ))
   ),
-  addTodo: t => (
+  addTask: t => (
     h.request(t, (http) => (
       t.card('name').then(card => (
         http.post('/tasks/user', {
@@ -42,22 +42,20 @@ let h = habitica = ({
         })
         .then((res) => res.data)
         .then((res) => (
-          t.set('card', 'private', {
-            habiticaId: res.data.id
+          t.set('card', 'private', 'task', {
+            id: res.data.id
           })
         ))
         .catch(error => console.error(error))
       ))
     ))
   ),
-  removeTodo: t => (
+  removeTask: t => (
     h.request(t, (http) => (
-      t.get('card', 'private').then(cardStorage => (
-        http.delete(`/tasks/${cardStorage.habiticaId}`)
+      t.get('card', 'private', 'task').then(task => (
+        http.delete(`/tasks/${task.id}`)
           .then(_ => (
-            t.set('card', 'private', {
-              habiticaId: null
-            })
+            t.remove('card', 'private', 'task')
           ))
           .catch(error => console.error(error))
       ))
@@ -66,16 +64,16 @@ let h = habitica = ({
   sync: t => (
     t.get('board', 'private', 'habiticaSyncedLists', {}).then(syncedLists => (
       t.card('id', 'idList').then(card => (
-        t.get('card', 'private').then(cardStorage => {
+        t.get('card', 'private', 'task', {}).then(task => {
           let isListSynced = syncedLists[card.idList]
 
           if (!isListSynced) {
-            cardStorage.habiticaId && h.removeTodo(t)
+            task.id && h.removeTask(t)
             return
           }
 
-          if (!cardStorage.habiticaId) { 
-            h.addTodo(t)
+          if (!task.id) { 
+            h.addTask(t)
           }
         })
       ))
