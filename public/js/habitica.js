@@ -1,3 +1,8 @@
+const LIST_TYPES = {
+  DONE: 'done',
+  DOING: 'doing'
+}
+
 let h = habitica = ({
   loading: {},
   api: 'https://habitica.com/api/v3',
@@ -88,40 +93,70 @@ let h = habitica = ({
     ))
   ),
   sync: t => (
-    t.get('board', 'private', 'habiticaSyncedLists', {}).then(syncedLists => (
+    t.get('board', 'private', 'habiticaLists', {}).then(habiticaLists => (
       t.card('id', 'idList').then(card => (
         t.get('card', 'private', 'task', {}).then(task => {
-          let isListSynced = syncedLists[card.idList]
+          let listType = habiticaLists[card.idList]
 
-          if (!isListSynced) {
-            task.id && h.removeTask(t)
-            return
-          }
-
-          if (!task.id) { 
-            h.addTask(t)
+          if (listType == LIST_TYPES.DOING) {
+            if (task.id) {
+              if (task.done) {
+                return h.undoTask(t)
+              }
+            } else {
+              return h.addTask(t)
+            }
+          } else if (listType == LIST_TYPES.DONE) {
+            if (task.id) {
+              if (!task.done) {
+                return h.doTask(t)
+              }
+            } else {
+              return h.addTask(t).then(() => h.doTask(t))
+            }
+          } else {
+            if (task.id) {
+              if (task.done) {
+                return h.undoTask(t).then(() => h.removeTask(t))
+              } else {
+                return h.removeTask(t)
+              }
+            }
           }
         })
       ))
     ))
   ),
-  syncList: t => (
-    h.setListStatus(t, true)
+  markListAsDone: t => (
+    h.markList(t, LIST_TYPES.DONE)
   ),
-  unsyncList: t => (
-    h.setListStatus(t, false)
+  markListAsDoing: t => (
+    h.markList(t, LIST_TYPES.DOING)
   ),
-  setListStatus: (t, status) => (
-    t.get('board', 'private', 'habiticaSyncedLists', {}).then(syncedLists => (
+  markList: (t, listType) => (
+    t.get('board', 'private', 'habiticaLists', {}).then(habiticaLists => (
       t.list('id', 'name').then(list => {
-        syncedLists[list.id] = status
+        habiticaLists[list.id] = listType
         t.closePopup()
         t.alert({
-          message: `List "${list.name}" successfully ${status ? '' : 'un'}synced...`,
+          message: `List "${list.name}" was successfully marked`,
           duration: 2,
-          display: status ? 'success' : null
+          display: 'success'
         })
-        return t.set('board', 'private', 'habiticaSyncedLists', syncedLists)
+        return t.set('board', 'private', 'habiticaLists', habiticaLists)
+      })
+    ))
+  ),
+  unmarkList: t => (
+    t.get('board', 'private', 'habiticaLists', {}).then(habiticaLists => (
+      t.list('id', 'name').then(list => {
+        delete habiticaLists[list.id]
+        t.closePopup()
+        t.alert({
+          message: `List "${list.name}" was successfully unmarked`,
+          duration: 2
+        })
+        return t.set('board', 'private', 'habiticaLists', habiticaLists)
       })
     ))
   )

@@ -76,16 +76,22 @@ t.getAll()
 
 */
 
-let HABITICA_ICON = 'https://cdn.glitch.com/project-avatar/71dc7d01-6387-43b0-b720-e9d264da3a8e.png'
+const ICONS = {
+  HABITICA: 'https://cdn.glitch.com/project-avatar/b281f61d-200e-4898-83b3-b6aa7db06df9.png',
+  TASK_DOING: 'https://cdn.glitch.com/project-avatar/b281f61d-200e-4898-83b3-b6aa7db06df9.png',
+  TASK_DONE: 'https://cdn.glitch.com/project-avatar/71dc7d01-6387-43b0-b720-e9d264da3a8e.png'
+}
 
-let getBadges = t => (
-  t.get('card', 'private', 'task', {}).then(task => (
+let getBadges = t => {
+  return t.get('card', 'private', 'task', {}).then(task => (
     [{
-      // icon: habiticaSyncStatus && habiticaId ? HABITICA_ICON : null // for card front badges only
-      icon: task.id ? HABITICA_ICON : null // for card front badges only
+      icon: task.id ? ICONS.TASK_DOING : null // for card front badges only
+    }, 
+    {
+      icon: task.done ? ICONS.TASK_DONE : null
     }]
   ))
-)
+}
 
 // We need to call initialize to get all of our capability handles set up and registered with Trello
 TrelloPowerUp.initialize({
@@ -95,7 +101,7 @@ TrelloPowerUp.initialize({
   // The Promise should resolve to the object type that is expected to be returned
   'board-buttons': (t, options) => (
     [{
-      icon: HABITICA_ICON,
+      icon: ICONS.HABITICA,
       text: 'Settings',
       callback: t => (
         t.popup({
@@ -111,7 +117,7 @@ TrelloPowerUp.initialize({
     return getBadges(t)
   },
   'card-detail-badges': (t, options) => (
-    t.get('card', 'private', 'task', {}).then(habiticaId => (
+    t.get('card', 'private', 'task', {}).then(task => (
       [{
         title: 'Habitica',
         text: task.id ? 'Remove' : 'Add',
@@ -120,14 +126,30 @@ TrelloPowerUp.initialize({
     ))
   ),
   'list-actions': t => (
-    t.get('board', 'private', 'habiticaSyncedLists', {}).then(syncedLists => (
+    t.get('board', 'private', 'habiticaLists', {}).then(habiticaLists => (
       t.list('id').then(list => {
-        let isListSynced = !!syncedLists[list.id]
+        let listType    = habiticaLists[list.id]
 
-        return [{
-          text: isListSynced ? 'Unsync list with Habitica' : 'Sync list with Habitica',
-          callback: isListSynced ? h.unsyncList : h.syncList
-        }]
+        if (listType == LIST_TYPES.DOING) {
+          return [{
+            text: 'Unmark list as "Doing"',
+            callback: h.unmarkList
+          }]
+        } else if (listType == LIST_TYPES.DONE) {
+          return [{
+            text: 'Unmark list as "Done"',
+            callback: h.unmarkList
+          }]
+        } else {
+          return [{
+            text: 'Mark list as "Doing"',
+            callback: h.markListAsDoing
+          },
+          {
+            text: 'Mark list as "Done"',
+            callback: h.markListAsDone
+          }]
+        }
       })
     ))
   ),
