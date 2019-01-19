@@ -54,16 +54,21 @@ let h = habitica = ({
       return t.remove('card', 'private', 'task')
     }
   },
-  template: text => (
-    `### ![](${TRELLO_ICON})&ensp; ${text}`
-  ),
+  template: card => {
+    let cardUrl = `https://trello.com/c/${card.shortLink}`
+
+    return {
+      text: `### ![](${TRELLO_ICON})&ensp; ${card.name}`,
+      notes: `[Open in Trello](${cardUrl})`
+    }
+  },
   addTask: t => (
     h.request(t, (http) => (
-      t.card('name').then(card => (
-        http.post('/tasks/user', {
-          type: 'todo',
-          text: h.template(card.name)
-        })
+      t.card('name', 'shortLink').then(card => (
+        http.post('/tasks/user', Object.assign({},
+          { type: 'todo' }, 
+          h.template(card)
+        ))
         .then((res) => res.data)
         .then((res) => (
           t.set('card', 'private', 'task', {
