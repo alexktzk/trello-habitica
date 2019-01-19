@@ -38,6 +38,20 @@ let h = habitica = ({
       })
     ))
   ),
+  handleError: (t, error) => {
+    let res = error.response
+    let errorMessage = `${res.status} ${res.data.error}: ${res.data.message}`
+    
+    if (error.response.status == 404) {
+      console.error(errorMessage)
+      t.alert({
+        message: `Task not found.\nIt may have been deleted.`,
+        duration: 10,
+        display: 'error'
+      })
+      return t.remove('card', 'private', 'task')
+    }
+  },
   addTask: t => (
     h.request(t, (http) => (
       t.card('name').then(card => (
@@ -51,7 +65,7 @@ let h = habitica = ({
             id: res.data.id
           })
         ))
-        .catch(error => console.error(error))
+        .catch(error => h.handleError(t, error))
       ))
     ))
   ),
@@ -62,7 +76,7 @@ let h = habitica = ({
           .then(_ => (
             t.remove('card', 'private', 'task')
           ))
-          .catch(error => console.error(error))
+          .catch(error => h.handleError(t, error))
       ))
     ))
   ),
@@ -75,7 +89,7 @@ let h = habitica = ({
               done: true
             }))
           ))
-          .catch(error => console.error(error))
+          .catch(error => h.handleError(t, error))
       ))
     ))
   ),
@@ -88,7 +102,7 @@ let h = habitica = ({
               done: false
             }))
           ))
-          .catch(error => console.error(error))
+          .catch(error => h.handleError(t, error))
       ))
     ))
   ),
