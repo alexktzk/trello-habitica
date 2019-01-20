@@ -29,7 +29,7 @@ let h = habitica = ({
     ))
   ),
   preventDuplicated: (t, callback) => (
-    t.card('id').get('id').then(card => {
+    t.card('id').then(card => {
       if (h.loading[card.id]) { return }
       
       h.loading[card.id] = true
