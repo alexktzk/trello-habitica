@@ -113,7 +113,7 @@ TrelloPowerUp.initialize({
     }]
   ),
   'card-badges': (t, options) => {
-    h.sync(t)
+    h.sync(t, options)
     return getBadges(t)
   },
   'card-detail-badges': (t, options) => (

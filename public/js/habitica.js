@@ -5,6 +5,13 @@ const LIST_TYPES = {
   DOING: 'doing'
 }
 
+const scope = 'ASSIGNED_TO_ME'
+
+const CARD_SCOPES = {
+  ASSIGNED_TO_ME: 'me',
+  NONE: 'none'
+}
+
 let h = habitica = ({
   loading: {},
   api: 'https://habitica.com/api/v3',
@@ -116,38 +123,58 @@ let h = habitica = ({
       ))
     ))
   ),
-  sync: t => (
-    t.get('board', 'private', 'habiticaLists', {}).then(habiticaLists => (
-      t.card('id', 'idList').then(card => (
-        t.get('card', 'private', 'task', {}).then(task => {
-          let listType = habiticaLists[card.idList]
+  handleScopedSync: (t, task) => {
+    if (task.id) {
+      if (task.done) {
+        return h.undoTask(t).then(() => h.removeTask(t))
+      } else {
+        return h.removeTask(t)
+      }
+    }
+  },
+  handleSync: (t, task, listType) => {
+    if (listType == LIST_TYPES.DOING) {
+      if (task.id) {
+        if (task.done) {
+          return h.undoTask(t)
+        }
+      } else {
+        return h.addTask(t)
+      }
+    } else if (listType == LIST_TYPES.DONE) {
+      if (task.id) {
+        if (!task.done) {
+          return h.doTask(t)
+        }
+      } else {
+        return h.addTask(t).then(() => h.doTask(t))
+      }
+    } else {
+      if (task.id) {
+        if (task.done) {
+          return h.undoTask(t).then(() => h.removeTask(t))
+        } else {
+          return h.removeTask(t)
+        }
+      }
+    }
+  },
+  sync: (t, options) => (
+    t.get('member', 'private', 'settings', {}).then(settings => (
+      t.get('board', 'private', 'habiticaLists', {}).then(habiticaLists => (
+        t.card('id', 'idList', 'members').then(card => (
+          t.get('card', 'private', 'task', {}).then(task => {
+            if (settings.scope == CARD_SCOPES.ASSIGNED_TO_ME) { 
+              let me = options.context.member
+              if (!card.members.some(member => member.id == me)) {
+                return h.handleScopedSync(t, task)
+              }
+            }
 
-          if (listType == LIST_TYPES.DOING) {
-            if (task.id) {
-              if (task.done) {
-                return h.undoTask(t)
-              }
-            } else {
-              return h.addTask(t)
-            }
-          } else if (listType == LIST_TYPES.DONE) {
-            if (task.id) {
-              if (!task.done) {
-                return h.doTask(t)
-              }
-            } else {
-              return h.addTask(t).then(() => h.doTask(t))
-            }
-          } else {
-            if (task.id) {
-              if (task.done) {
-                return h.undoTask(t).then(() => h.removeTask(t))
-              } else {
-                return h.removeTask(t)
-              }
-            }
-          }
-        })
+            let listType = habiticaLists[card.idList]
+            return h.handleSync(t, task, listType)
+          })
+        ))
       ))
     ))
   ),
