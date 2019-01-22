@@ -4,7 +4,8 @@
   "description": "A sample Trello Power-Up that can be used as a starting point for your own awesome Power-Up.",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "test": "jest"
   },
   "repository": "https://github.com/trello/glitch-trello-power-up",
   "dependencies": {
@@ -21,5 +22,8 @@
     "trello",
     "glitch"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "jest": "^23.6.0"
+  }
 }

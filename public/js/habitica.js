@@ -212,3 +212,6 @@ let h = habitica = ({
     ))
   )
 })
+
+// Fails in a browser, but required for tests.
+try { module.exports = h } catch(_) {}
