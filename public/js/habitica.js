@@ -15,38 +15,35 @@ const CARD_SCOPES = {
 let h = habitica = ({
   loading: {},
   api: 'https://habitica.com/api/v3',
+  http: undefined,
   request: (t, callback) => (
     h.preventDuplicated(t, () => (
-      h.withHeaders(t, headers => (
-        callback(
-          axios.create({
-            baseURL: h.api,
-            timeout: 10000,
-            headers: headers
-          })
-        )
-      ))
+      h.withHeaders(t, headers => {
+        h.http = h.http || axios.create({
+          baseURL: h.api,
+          timeout: 10000,
+          headers: headers
+        })
+
+        return callback(h.http)
+      })
     ))
   ),
-  preventDuplicated: (t, callback) => (
-    t.card('id').then(card => {
-      if (h.loading[card.id]) { return }
-      
-      h.loading[card.id] = true
-      return callback().then(() => {
-        h.loading[card.id] = false
-      })
+  preventDuplicated: async (t, callback) => {
+    const card = await t.card('id')
+    if (h.loading[card.id]) { return }
+    
+    h.loading[card.id] = true
+    return callback().then(() => h.loading[card.id] = false)
+  },
+  withHeaders: async (t, callback) => {
+    const member = await t.get('member', 'private')
+    return callback({
+      'x-api-user': member.userId,
+      'x-api-key': member.apiToken,
+      'Content-Type': 'application/json'
     })
-  ),
-  withHeaders: (t, callback) => (
-    t.get('member', 'private').then(member => (
-      callback({
-        'x-api-user': member.userId,
-        'x-api-key': member.apiToken,
-        'Content-Type': 'application/json'
-      })
-    ))
-  ),
+  },
   handleError: (t, error) => {
     let res = error.response
     let errorMessage = `${res.status} ${res.data.error}: ${res.data.message}`
@@ -70,12 +67,14 @@ let h = habitica = ({
     }
   },
   addTask: t => (
-    h.request(t, (http) => (
-      t.card('name', 'shortLink').then(card => (
-        http.post('/tasks/user', Object.assign({},
-          { type: 'todo' }, 
-          h.template(card)
-        ))
+    h.request(t, async (http) => {
+      const card = await t.card('name', 'shortLink')
+      const params = Object.assign({},
+        { type: 'todo' }, 
+        h.template(card)
+      )
+
+      return http.post('/tasks/user', params)
         .then((res) => res.data)
         .then((res) => (
           t.set('card', 'private', 'task', {
@@ -83,45 +82,42 @@ let h = habitica = ({
           })
         ))
         .catch(error => h.handleError(t, error))
-      ))
-    ))
+    })
   ),
   removeTask: t => (
-    h.request(t, (http) => (
-      t.get('card', 'private', 'task').then(task => (
-        http.delete(`/tasks/${task.id}`)
-          .then(_ => (
-            t.remove('card', 'private', 'task')
-          ))
-          .catch(error => h.handleError(t, error))
-      ))
-    ))
+    h.request(t, async (http) => {
+      const task = await t.get('card', 'private', 'task')
+
+      return http.delete(`/tasks/${task.id}`)
+        .then(_ => t.remove('card', 'private', 'task'))
+        .catch(error => h.handleError(t, error))
+    })
   ),
   doTask: t => (
-    h.request(t, (http) => (
-      t.get('card', 'private', 'task').then(task => (
-        http.post(`/tasks/${task.id}/score/up`)
-          .then(_ => (
-            t.set('card', 'private', 'task', Object.assign({}, task, {
-              done: true
-            }))
-          ))
-          .catch(error => h.handleError(t, error))
-      ))
-    ))
+    h.request(t, async (http) => {
+      const task = await t.get('card', 'private', 'task')
+
+      return http.post(`/tasks/${task.id}/score/up`)
+        .then(_ => (
+          t.set('card', 'private', 'task', Object.assign({}, task, {
+            done: true
+          }))
+        ))
+        .catch(error => h.handleError(t, error))
+    })
   ),
   undoTask: t => (
-    h.request(t, (http) => (
-      t.get('card', 'private', 'task').then(task => (
-        http.post(`/tasks/${task.id}/score/down`)
-          .then(_ => (
-            t.set('card', 'private', 'task', Object.assign({}, task, {
-              done: false
-            }))
-          ))
-          .catch(error => h.handleError(t, error))
-      ))
-    ))
+    h.request(t, async (http) => {
+      const task = await t.get('card', 'private', 'task')
+
+      return http.post(`/tasks/${task.id}/score/down`)
+        .then(_ => (
+          t.set('card', 'private', 'task', Object.assign({}, task, {
+            done: false
+          }))
+        ))
+        .catch(error => h.handleError(t, error))
+    })
   ),
   handleScopedSync: (t, task) => {
     if (task.id) {
@@ -159,58 +155,55 @@ let h = habitica = ({
       }
     }
   },
-  sync: (t, options) => (
-    t.get('member', 'private', 'settings', {}).then(settings => (
-      t.get('board', 'private', 'habiticaLists', {}).then(habiticaLists => (
-        t.card('id', 'idList', 'members').then(card => (
-          t.get('card', 'private', 'task', {}).then(task => {
-            if (settings.scope == CARD_SCOPES.ASSIGNED_TO_ME) { 
-              let me = options.context.member
-              if (!card.members.some(member => member.id == me)) {
-                return h.handleScopedSync(t, task)
-              }
-            }
+  sync: async (t, options) => {
+    const settings = await t.get('member', 'private', 'settings', {})
+    const habiticaLists = await t.get('board', 'private', 'habiticaLists', {})
+    const card = await t.card('id', 'idList', 'members')
+    const task = await t.get('card', 'private', 'task', {})
 
-            let listType = habiticaLists[card.idList]
-            return h.handleSync(t, task, listType)
-          })
-        ))
-      ))
-    ))
-  ),
+    if (settings.scope == CARD_SCOPES.ASSIGNED_TO_ME) { 
+      let me = options.context.member
+      if (!card.members.some(member => member.id == me)) {
+        return h.handleScopedSync(t, task)
+      }
+    }
+
+    let listType = habiticaLists[card.idList]
+    return h.handleSync(t, task, listType)
+  },
   markListAsDone: t => (
     h.markList(t, LIST_TYPES.DONE)
   ),
   markListAsDoing: t => (
     h.markList(t, LIST_TYPES.DOING)
   ),
-  markList: (t, listType) => (
-    t.get('board', 'private', 'habiticaLists', {}).then(habiticaLists => (
-      t.list('id', 'name').then(list => {
-        habiticaLists[list.id] = listType
-        t.closePopup()
-        t.alert({
-          message: `List "${list.name}" was successfully marked`,
-          duration: 2,
-          display: 'success'
-        })
-        return t.set('board', 'private', 'habiticaLists', habiticaLists)
-      })
-    ))
-  ),
-  unmarkList: t => (
-    t.get('board', 'private', 'habiticaLists', {}).then(habiticaLists => (
-      t.list('id', 'name').then(list => {
-        delete habiticaLists[list.id]
-        t.closePopup()
-        t.alert({
-          message: `List "${list.name}" was successfully unmarked`,
-          duration: 2
-        })
-        return t.set('board', 'private', 'habiticaLists', habiticaLists)
-      })
-    ))
-  )
+  markList: async (t, listType) => {
+    const habiticaLists = await t.get('board', 'private', 'habiticaLists', {})
+    const list = await t.list('id', 'name')
+
+    habiticaLists[list.id] = listType
+
+    t.closePopup()
+    t.alert({
+      message: `List "${list.name}" was successfully marked`,
+      duration: 2,
+      display: 'success'
+    })
+    return t.set('board', 'private', 'habiticaLists', habiticaLists)
+  },
+  unmarkList: async (t) => {
+    const habiticaLists = await t.get('board', 'private', 'habiticaLists', {})
+    const list = await t.list('id', 'name')
+
+    delete habiticaLists[list.id]
+
+    t.closePopup()
+    t.alert({
+      message: `List "${list.name}" was successfully unmarked`,
+      duration: 2
+    })
+    return t.set('board', 'private', 'habiticaLists', habiticaLists)
+  }
 })
 
 // Fails in a browser, but required for tests.
