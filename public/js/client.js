@@ -76,10 +76,17 @@ t.getAll()
 
 */
 
-const ICONS = {
-  HABITICA: 'https://cdn.glitch.com/project-avatar/b281f61d-200e-4898-83b3-b6aa7db06df9.png',
-  TASK_DOING: 'https://cdn.glitch.com/project-avatar/b281f61d-200e-4898-83b3-b6aa7db06df9.png',
-  TASK_DONE: 'https://cdn.glitch.com/project-avatar/71dc7d01-6387-43b0-b720-e9d264da3a8e.png'
+let syncing = {}
+
+syncWithHabiticaTask = (t) => {
+  let id = t.getContext().card
+  
+  if (!syncing[id]) {
+    syncing[id] = true
+    return new HabiticaTask(t).sync().then(() => {
+      syncing[id] = false
+    })
+  }
 }
 
 let getBadges = t => {
@@ -112,42 +119,44 @@ TrelloPowerUp.initialize({
       )
     }]
   ),
-  'card-badges': (t, options) => {
-    h.sync(t, options)
+  'card-badges': t => {
+    syncWithHabiticaTask(t)
     return getBadges(t)
   },
-  'card-detail-badges': (t, options) => (
-    t.get('card', 'private', 'task', {}).then(task => (
-      [{
-        title: 'Habitica',
-        text: task.id ? 'Remove' : 'Add',
-        callback: task.id ? h.removeTask : h.addTask
-      }]
-    ))
-  ),
+  'card-detail-badges': async (t) => {
+    let habiticaTask = new HabiticaTask(t)
+    let task = await habiticaTask.getLocal()
+    
+    return [{
+      title: 'Habitica',
+      text: task.id ? 'Remove' : 'Add',
+      callback: task.id ? habiticaTask.remove : habiticaTask.add
+    }]
+  },
   'list-actions': t => (
     t.get('board', 'private', 'habiticaLists', {}).then(habiticaLists => (
-      t.list('id').then(list => {
-        let listType    = habiticaLists[list.id]
+      t.list('id').get('id').then(id => {
+        let list = new HabiticaList(t)
+        let listType = habiticaLists[id]
 
         if (listType == LIST_TYPES.DOING) {
           return [{
             text: 'Unmark list as "Doing"',
-            callback: h.unmarkList
+            callback: list.unmark
           }]
         } else if (listType == LIST_TYPES.DONE) {
           return [{
             text: 'Unmark list as "Done"',
-            callback: h.unmarkList
+            callback: list.unmark
           }]
         } else {
           return [{
             text: 'Mark list as "Doing"',
-            callback: h.markListAsDoing
+            callback: list.markAsDoing
           },
           {
             text: 'Mark list as "Done"',
-            callback: h.markListAsDone
+            callback: list.markAsDone
           }]
         }
       })
