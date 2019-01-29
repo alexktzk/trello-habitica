@@ -21,6 +21,14 @@
       <option value="me">Only assigned to me</option>
     </select>
 
+    <b>Default difficulty for todos:</b>
+    <select id="difficulty">
+      <option value="trivial">Trivial</option>
+      <option value="easy">Easy</option>
+      <option value="medium">Medium</option>
+      <option value="hard">Hard</option>
+    </select>
+
     <button id="submit-btn" type="submit" class="mod-primary">Save</button>
   
     <script>
@@ -33,12 +41,15 @@
       t.loadSecret('apiToken').then(val => $apiToken.value = val)
 
       let $scope = document.getElementById('scope')
+      let $difficulty = document.getElementById('difficulty')
 
       t.get('member', 'private', 'settings', {
         scope: 'me',
+        difficulty: 'easy'
       })
       .then(settings => {
         $scope.value = settings.scope
+        $difficulty.value = settings.difficulty
       })
 
       document.getElementById('submit-btn').addEventListener('click', () => {
@@ -47,6 +58,7 @@
           t.storeSecret('apiToken', $apiToken.value),
           t.set('member', 'private', 'settings', { 
             scope: $scope.value,
+            difficulty: $difficulty.value
           })
         ]).then(() => {
           return t.closePopup()

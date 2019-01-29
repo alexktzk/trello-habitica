@@ -9,19 +9,28 @@ class HabiticaTask {
     this.API = API
   }
 
-  template(card) {
+  async template(card) {
     let cardUrl = `https://trello.com/c/${card.shortLink}`
+    let settings = await this.storage.getSettings()
+
+    let difficulties = {
+      'trivial': 0.5,
+      'easy': 1,
+      'medium': 1.5,
+      'hard': 2
+    }
 
     return {
       type: 'todo',
       text: `### ![](${TRELLO_ICON})&ensp; ${card.name}`,
-      notes: `[Open in Trello](${cardUrl})`
+      notes: `[Open in Trello](${cardUrl})`,
+      priority: difficulties[settings.difficulty]
     }
   }
 
   async handleAdd() {
     let card = await this.t.card('name', 'shortLink')
-    let params = this.template(card)
+    let params = await this.template(card)
 
     return this.API.addTask(params)
       .then(res => this.storage.setTask({ id: res.data.id }))
