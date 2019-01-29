@@ -13,14 +13,14 @@ class HabiticaApi {
     }
 
     let params = Object.assign({}, defaultParams, userParams)
-    return fetch(url, params).then((res) => this.handleResponse(res))
+    return fetch(url, params)
+      .then((res) => this.handleResponse(res))
   }
 
   async authHeaders() {
-    let member = await this.t.get('member', 'private')
     return {
-      'x-api-user': member.userId,
-      'x-api-key': member.apiToken,
+      'x-api-user': await this.t.loadSecret('userId'),
+      'x-api-key': await this.t.loadSecret('apiToken'),
       'Content-Type': 'application/json'
     }
   }
@@ -36,12 +36,16 @@ class HabiticaApi {
   handleError(error) {
     let message = ''
     
-    if (error.status == 404) {
+    if (error.status == 401) {
+      message = "Unauthorized.\nUser ID or API Token is invalid."
+      this.notify(message, 'error')
+    } else if (error.status == 404) {
       this.storage.removeTask()
     }
 
-    console.error(`${error.status}: ${message}`)
-    return error
+    console.error(error)
+    // throw Error(`${error.status}: ${message}`)
+    return res
   }
   
   addTask(params) {
@@ -73,7 +77,7 @@ class HabiticaApi {
     this.t.alert({
       message,
       display,
-      duration: 3
+      duration: 10
     })
   }
 }
