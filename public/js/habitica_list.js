@@ -1,6 +1,10 @@
 class HabiticaList {
-  constructor(trello) {
+  constructor(
+    trello,
+    storage = new HabiticaStorage(trello)
+  ) {
     this.t = trello
+    this.storage = storage
   }
 
   markAsDone() {
@@ -12,25 +16,25 @@ class HabiticaList {
   }
 
   async mark(listType) {
-    const habiticaLists = await this.t.get('board', 'private', 'habiticaLists', {})
+    const lists = await this.storage.getLists()
     const list = await this.t.list('id', 'name')
 
-    habiticaLists[list.id] = listType
+    lists[list.id] = listType
 
     this.t.closePopup()
     this.notify(`List "${list.name}" was successfully marked`, 'success')
-    return this.t.set('board', 'private', 'habiticaLists', habiticaLists)
+    return this.storage.setLists(lists)
   }
 
   async unmark() {
-    const habiticaLists = await this.t.get('board', 'private', 'habiticaLists', {})
+    const lists = await this.storage.getLists()
     const list = await this.t.list('id', 'name')
 
-    delete habiticaLists[list.id]
+    delete lists[list.id]
 
     this.t.closePopup()
     this.notify(`List "${list.name}" was successfully unmarked`, 'success')
-    return this.t.set('board', 'private', 'habiticaLists', habiticaLists)
+    return this.storage.setLists(lists)
   }
 
   notify(message, display = 'info') {

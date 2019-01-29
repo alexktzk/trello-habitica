@@ -134,29 +134,28 @@ TrelloPowerUp.initialize({
     }]
   },
   'list-actions': t => (
-    t.get('board', 'private', 'habiticaLists', {}).then(habiticaLists => (
-      t.list('id').get('id').then(id => {
-        let list = new HabiticaList(t)
-        let listType = habiticaLists[id]
+    t.get('board', 'private', 'lists', {}).then(lists => (
+      t.list('id').then(list => {
+        let listType = lists[list.id]
 
         if (listType == LIST_TYPES.DOING) {
           return [{
             text: 'Unmark list as "Doing"',
-            callback: list.unmark
+            callback: (t) => new HabiticaList(t).unmark()
           }]
         } else if (listType == LIST_TYPES.DONE) {
           return [{
             text: 'Unmark list as "Done"',
-            callback: list.unmark
+            callback: (t) => new HabiticaList(t).unmark()
           }]
         } else {
           return [{
             text: 'Mark list as "Doing"',
-            callback: list.markAsDoing
+            callback: (t) => new HabiticaList(t).markAsDoing()
           },
           {
             text: 'Mark list as "Done"',
-            callback: list.markAsDone
+            callback: (t) => new HabiticaList(t).markAsDone()
           }]
         }
       })

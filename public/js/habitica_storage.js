@@ -7,9 +7,9 @@ class HabiticaStorage {
     return this.t.get('card', 'private', 'task', {})
   }
 
-  setTask(params) {
-    return this.t.get('card', 'private', 'task').then(task => {
-      return this.t.set('card', 'private', 'task', Object.assign({}, task, params))
+  setTask(obj) {
+    return this.t.get('card', 'private', 'task').then(current => {
+      return this.t.set('card', 'private', 'task', Object.assign({}, current, obj))
     })
   }
 
@@ -21,7 +21,11 @@ class HabiticaStorage {
     return this.t.get('member', 'private', 'settings', {})
   }
 
-  getHabiticaLists() {
-    return this.t.get('board', 'private', 'habiticaLists', {})
+  getLists() {
+    return this.t.get('board', 'private', 'lists', {})
+  }
+
+  setLists(obj) {
+    return this.t.set('board', 'private', 'lists', obj)
   }
 }

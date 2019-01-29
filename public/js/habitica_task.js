@@ -1,8 +1,12 @@
 class HabiticaTask {
-  constructor(trello) {
+  constructor(
+    trello,
+    storage = new HabiticaStorage(trello),
+    API = new HabiticaApi(trello)
+  ) {
     this.t = trello
-    this.API = new HabiticaApi(trello)
-    this.storage = new HabiticaStorage(trello)
+    this.storage = storage
+    this.API = API
   }
 
   template(card) {
@@ -94,8 +98,8 @@ class HabiticaTask {
       }
     }
 
-    let habiticaLists = await this.storage.getHabiticaLists()
-    let listType = habiticaLists[card.idList]
+    let lists = await this.storage.getLists()
+    let listType = lists[card.idList]
 
     return this.handleSync(task, listType)
   }

@@ -1,9 +1,13 @@
 class HabiticaApi {
-  constructor(trello) {
+  constructor(
+    trello, 
+    storage = new HabiticaStorage(trello)
+  ) {
     this.t = trello
+    this.storage = storage
   }
 
-  async request(url, userParams) {
+  async request(url, userParams = {}) {
     let defaultParams = { 
       headers: await this.authHeaders()
     }
@@ -33,9 +37,7 @@ class HabiticaApi {
     let message = ''
     
     if (error.status == 404) {
-      message = `The task might have been removed.`
-      new HabiticaStorage(this.t).removeTask()
-      this.notify(message, 'error')
+      this.storage.removeTask()
     }
 
     console.error(`${error.status}: ${message}`)
