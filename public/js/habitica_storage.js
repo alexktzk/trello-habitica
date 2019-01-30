@@ -18,7 +18,17 @@ class HabiticaStorage {
   }
 
   getSettings() {
-    return this.t.get('member', 'private', 'settings', {})
+    let defaultSettings = {
+      scope: 'me',
+      priority: '1'
+    }
+    return this.t.get('member', 'private', 'settings', defaultSettings)
+  }
+
+  setSettings(obj) {
+    return this.t.get('member', 'private', 'settings').then(current => {
+      return this.t.set('member', 'private', 'settings', Object.assign({}, current, obj))
+    })
   }
 
   getLists() {

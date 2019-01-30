@@ -3,17 +3,15 @@
   <head>
     <link rel="stylesheet" href="https://p.trellocdn.com/power-up.min.css">
     <script src="https://p.trellocdn.com/power-up.min.js"></script>
+    <script src="js/habitica_storage.js"></script>
   </head>
   <body>
-    <h3>
-      API
-    </h3>
+    <h3>API</h3>
+    
     <input id="user-id" type="text" placeholder="User ID">
     <input id="api-token" type="password" placeholder="API Token">
 
-    <h3>
-      Preferences
-    </h3>
+    <h3>Preferences</h3>
 
     <b>What cards to sync:</b>
     <select id="scope">
@@ -22,17 +20,19 @@
     </select>
 
     <b>Default difficulty for todos:</b>
-    <select id="difficulty">
-      <option value="trivial">Trivial</option>
-      <option value="easy">Easy</option>
-      <option value="medium">Medium</option>
-      <option value="hard">Hard</option>
+    <select id="priority">
+      <option value="0.5">Trivial</option>
+      <option value="1">Easy</option>
+      <option value="1.5">Medium</option>
+      <option value="2">Hard</option>
     </select>
 
     <button id="submit-btn" type="submit" class="mod-primary">Save</button>
   
     <script>
       let t = TrelloPowerUp.iframe()
+      let storage = new HabiticaStorage(t)
+      let $submitButton = document.getElementById('submit-btn')
 
       let $userId   = document.getElementById('user-id')
       let $apiToken = document.getElementById('api-token')
@@ -41,24 +41,22 @@
       t.loadSecret('apiToken').then(val => $apiToken.value = val)
 
       let $scope = document.getElementById('scope')
-      let $difficulty = document.getElementById('difficulty')
+      let $priority = document.getElementById('priority')
 
-      t.get('member', 'private', 'settings', {
-        scope: 'me',
-        difficulty: 'easy'
-      })
-      .then(settings => {
+      storage.getSettings().then(settings => {
         $scope.value = settings.scope
-        $difficulty.value = settings.difficulty
+        $priority.value = settings.priority
       })
 
-      document.getElementById('submit-btn').addEventListener('click', () => {
-        Promise.all([
+      $submitButton.addEventListener('click', () => {
+        $submitButton.disabled = true
+        
+        return Promise.all([
           t.storeSecret('userId', $userId.value),
           t.storeSecret('apiToken', $apiToken.value),
-          t.set('member', 'private', 'settings', { 
+          storage.setSettings({ 
             scope: $scope.value,
-            difficulty: $difficulty.value
+            priority: $priority.value
           })
         ]).then(() => {
           return t.closePopup()

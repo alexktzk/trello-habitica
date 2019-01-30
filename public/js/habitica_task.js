@@ -13,18 +13,11 @@ class HabiticaTask {
     let cardUrl = `https://trello.com/c/${card.shortLink}`
     let settings = await this.storage.getSettings()
 
-    let difficulties = {
-      'trivial': 0.5,
-      'easy': 1,
-      'medium': 1.5,
-      'hard': 2
-    }
-
     return {
       type: 'todo',
+      priority: settings.priority,
       text: `### ![](${TRELLO_ICON})&ensp; ${card.name}`,
-      notes: `[Open in Trello](${cardUrl})`,
-      priority: difficulties[settings.difficulty]
+      notes: `[Open in Trello](${cardUrl})`
     }
   }
 
@@ -33,7 +26,14 @@ class HabiticaTask {
     let params = await this.template(card)
 
     return this.API.addTask(params)
-      .then(res => this.storage.setTask({ id: res.data.id }))
+      .then(res => (
+        this.storage.setTask({ 
+          id: res.data.id,
+          text: res.data.text,
+          notes: res.data.notes,
+          priority: res.data.priority
+        })
+      ))
   } 
 
   async handleRemove() {
@@ -55,6 +55,20 @@ class HabiticaTask {
 
     return this.API.undoTask(task.id)
       .then(_ => this.storage.setTask({ done: false }))
+  }
+
+  async handleUpdate(args) {
+    let task = await this.storage.getTask()
+    let params = {
+      priority: args.priority
+    }
+
+    return this.API.updateTask(task.id, params)
+      .then(res => (
+        this.storage.setTask({
+          priority: res.data.priority
+        })
+      ))
   }
 
   handleScopedSync(task) {

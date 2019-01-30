@@ -73,6 +73,13 @@ class HabiticaApi {
     })
   }
 
+  updateTask(id, params) {
+    return this.request(API + `/tasks/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(params)
+    })
+  }
+
   notify(message, display = 'info') {
     this.t.alert({
       message,

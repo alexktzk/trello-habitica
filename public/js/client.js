@@ -124,13 +124,16 @@ TrelloPowerUp.initialize({
     return getBadges(t)
   },
   'card-detail-badges': async (t) => {
-    let habiticaTask = new HabiticaTask(t)
-    let task = await habiticaTask.getLocal()
-    
     return [{
-      title: 'Habitica',
-      text: task.id ? 'Remove' : 'Add',
-      callback: task.id ? habiticaTask.remove : habiticaTask.add
+      title: 'To-Do',
+      text: 'Edit',
+      callback: t => (
+        t.popup({
+          title: 'Edit To-Do',
+          url: './edit-task.html',
+          height: 240,
+        })
+      )
     }]
   },
   'list-actions': t => (
