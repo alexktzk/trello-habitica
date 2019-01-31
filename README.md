@@ -1,47 +1,26 @@
-# Glitch Hosted Sample Trello Power-Up 🚀
+## [Trello](https://trello.com) integration with [Habitica](https://habitica.com)
+This Power-Up([?](https://trello.com/en/guide/power-up-productivity)) will keep in sync your Trello cards with Habitica. **No coding**, just fill the form and you're all set!
 
-Hey there 👋
+## How to use?
+Each Power-Up is associated with a team and once a Power-Up has been added to a team, it will be available to all of the boards that belong to that team. So [create a team](https://trello.com/en/guide/create-a-team.html) if you don't have one.
 
-This is a full featured sample Trello Power-Up. What does that mean for you? We hope it's a great starting point for you to remix, and make your own great Power-Up that makes Trello work even better for you. 
+To add a new Power-Up to your team, navigate to [Power-Ups Administration page](https://trello.com/power-ups/admin), choose your team and click **Create a Power-Up**.
 
-Once you remix this, you'll want to take a look at what the new name is. Click the `Show Live` button up in the top bar and grab that url and then head here:
+Now it's time to fill the form.
 
-👉  [https://trello.com/power-ups/admin](https://trello.com/power-ups/admin)
+1. At first, name your Power-Up.
+2. To work properly this Power-Up requires some permissions. Make sure you've checked all of them. Here they are:
+  * board-buttons
+  * callback
+  * card-badges
+  * card-buttons
+  * card-detail-badges
+  * list-actions
+3. Provide the URL to your Power-Up.
+  * The easiest way is to use this url `https://alexktzk.github.io/trello-habitica` and as a bonus you will receive all upcoming updates without any changes from your side.
+  * Or you can fork this repository, publish **gh-pages** branch to [GitHub Pages](https://pages.github.com) and use your own url.
+4. Now you can navigate to one of the boards of the team and activate your Power-Up! You will find it in the **Custom** section.
 
-Select the Trello team you want to add the Power-Up to. Note: You need to be an admin of the Trello team to add custom Power-Ups to it.
+## License
 
-Now click the `Create new Power-Up` button. If this is your first time creating a Power-Up, you'll need to agree to a "Joint Developer Agreement" first. After you have done that, you just need to give your cool new Power-Up a name, and paste the url link into the field titled `Iframe connector URL` (the one you copied earlier).
-
-This example Power-Up makes use of the following capabilities:
-* authorization-status
-* attachment-sections
-* attachment-thumbnail
-* board-buttons
-* callback
-* card-badges
-* card-buttons
-* card-detail-badges
-* card-from-url
-* format-url
-* show-authorization
-* show-setting
-
-So make sure to turn them all on when filling out the form. You'll also need a URL for an icon. You can use the sample one we have here: [https://cdn.glitch.com/2442c68d-7b6d-4b69-9d13-feab530aa88e%2Fglitch-icon.svg?1489773457908](https://cdn.glitch.com/2442c68d-7b6d-4b69-9d13-feab530aa88e%2Fglitch-icon.svg?1489773457908).
-
-Click `Save` and it's time to celebrate. 🎉 🎊
-
-Now when you look at the Power-Ups for any board in that team, your awesome new Power-Up will be available. You can continue to make changes to the Glitch project and you'll see that reflected in Trello (you may just need to refresh).
-
----
-
-Want more information about Power-Ups? 🤔
-
-👉  [https://developers.trello.com/power-ups/intro](https://developers.trello.com/power-ups/intro)
-
-We even have office hours you can sign up for if you want to talk to a real live person about your Power-Up. Just grab a slot that works for you on this [calendar](https://calendar.google.com/calendar/selfsched?sstoken=UU5DczNLUkNIbk5ifGRlZmF1bHR8YzJmZWM4YWM0NTgxMTE1NmRmMzgxNzMwODRjYzEwZGU). (Remember to add a bit about what you'd like help with when signing up for a slot).
-
----
-
-Looking for a more _realistic_ example Power-Up? You may find the Trello Card Snooze Power-Up useful. 😴
-
-👉  [Trello Card Snooze Glitch Project](https://glitch.com/edit/#!/trellocardsnooze)
+[MIT](https://opensource.org/licenses/MIT)
