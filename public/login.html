@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="https://p.trellocdn.com/power-up.min.css">
+    <script src="https://p.trellocdn.com/power-up.min.js"></script>
+    <script src="js/constants.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/habitica_api.js"></script>
+  </head>
+  <body>
+    <h3>API</h3>
+    
+    <input id="user-id" type="text" placeholder="User ID">
+    <input id="api-token" type="password" placeholder="API Token">
+
+    <button id="submit-btn" type="submit" class="mod-primary">Log in</button>
+  
+    <script>
+      let t = TrelloPowerUp.iframe()
+      let storage = new Storage(t)
+      let $submitButton = document.getElementById('submit-btn')
+
+      let $userId   = document.getElementById('user-id')
+      let $apiToken = document.getElementById('api-token')
+
+      let userId, apiToken
+      t.loadSecret('userId').then(val => userId = $userId.value = val)
+      t.loadSecret('apiToken').then(val => apiToken = $apiToken.value = val)
+
+      $submitButton.addEventListener('click', async () => {
+        $submitButton.disabled = true
+
+        await Promise.all([
+          t.storeSecret('userId', $userId.value),
+          t.storeSecret('apiToken', $apiToken.value)
+        ])
+
+        // if ((userId != $userId.value) || (apiToken != $apiToken.value)) {
+          let api = new HabiticaApi(t)
+          return await api.getUserProfile().then(res => {
+            localStorage.setItem('currentUser', res.data.profile.name)
+            return storage.setUser({
+              name: res.data.profile.name,
+              loggedIn: true
+            }).then(() => t.closePopup())
+          })
+        // }
+      })
+    </script>
+  </body>
+</html>

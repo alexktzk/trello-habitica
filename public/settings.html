@@ -3,14 +3,10 @@
   <head>
     <link rel="stylesheet" href="https://p.trellocdn.com/power-up.min.css">
     <script src="https://p.trellocdn.com/power-up.min.js"></script>
-    <script src="js/habitica_storage.js"></script>
+    <script src="js/constants.js"></script>
+    <script src="js/storage.js"></script>
   </head>
   <body>
-    <h3>API</h3>
-    
-    <input id="user-id" type="text" placeholder="User ID">
-    <input id="api-token" type="password" placeholder="API Token">
-
     <h3>Preferences</h3>
 
     <b>What cards to sync:</b>
@@ -27,18 +23,14 @@
       <option value="2">Hard</option>
     </select>
 
-    <button id="submit-btn" type="submit" class="mod-primary">Save</button>
+    <button id="submit-btn" class="mod-primary">Save</button><br>
+    <button id="logout-btn" class="mod-danger">Log out</button>
   
     <script>
       let t = TrelloPowerUp.iframe()
-      let storage = new HabiticaStorage(t)
+      let storage = new Storage(t)
       let $submitButton = document.getElementById('submit-btn')
-
-      let $userId   = document.getElementById('user-id')
-      let $apiToken = document.getElementById('api-token')
-
-      t.loadSecret('userId').then(val => $userId.value = val)
-      t.loadSecret('apiToken').then(val => $apiToken.value = val)
+      let $logoutButton = document.getElementById('logout-btn')
 
       let $scope = document.getElementById('scope')
       let $priority = document.getElementById('priority')
@@ -48,20 +40,25 @@
         $priority.value = settings.priority
       })
 
-      $submitButton.addEventListener('click', () => {
+      $submitButton.addEventListener('click', async () => {
         $submitButton.disabled = true
         
+        return storage.setSettings({ 
+          scope: $scope.value,
+          priority: $priority.value
+        }).then(() => t.closePopup())
+      })
+
+      $logoutButton.addEventListener('click', async () => {
+        $logoutButton.disabled = true
+
         return Promise.all([
-          t.storeSecret('userId', $userId.value),
-          t.storeSecret('apiToken', $apiToken.value),
-          storage.setSettings({ 
-            scope: $scope.value,
-            priority: $priority.value
-          })
-        ]).then(() => {
+          storage.removeUser()
+        ]).then(() => { 
           return t.closePopup()
         })
       })
+
     </script>
   </body>
 </html>
