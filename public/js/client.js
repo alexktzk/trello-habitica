@@ -78,52 +78,58 @@ t.getAll()
 
 let syncing = {}
 
-syncWithHabiticaTask = (t) => {
+let syncWithHabitica = async (t) => {
   let id = t.getContext().card
-  
-  if (!syncing[id]) {
-    syncing[id] = true
-    return new HabiticaTask(t).sync().then(() => {
-      syncing[id] = false
+
+  // prevent duplicated tries to sync while previous sync in progress
+  if (syncing[id]) return syncing[id]
+
+  // start syncing
+  syncing[id] = new Sync(t).start().then(() => {
+    return setTimeout(() => delete syncing[id], 1000)
+  })
+  return syncing[id]
+}
+
+t = TrelloPowerUp.initialize({
+  'board-buttons': async (t) => {
+    let currentUser = await new Storage(t).getUser()
+
+    let settingsPage = (t) => t.popup({
+      title: 'Habitica settings',
+      url: './settings.html',
+      height: 240,
     })
-  }
-}
+    
+    let loginPage = (t) => t.popup({
+      title: 'Log in Habitica',
+      url: './login.html',
+      height: 240,
+    })
 
-let getBadges = t => {
-  return t.get('card', 'private', 'task', {}).then(task => (
-    [{
-      icon: task.id ? ICONS.TASK_DOING : null // for card front badges only
-    }, 
-    {
-      icon: task.done ? ICONS.TASK_DONE : null
-    }]
-  ))
-}
-
-// We need to call initialize to get all of our capability handles set up and registered with Trello
-TrelloPowerUp.initialize({
-  // NOTE about asynchronous responses
-  // If you need to make an asynchronous request or action before you can reply to Trello
-  // you can return a Promise (bluebird promises are included at TrelloPowerUp.Promise)
-  // The Promise should resolve to the object type that is expected to be returned
-  'board-buttons': (t, options) => (
-    [{
+    return [{
       icon: ICONS.HABITICA,
-      text: 'Settings',
-      callback: t => (
-        t.popup({
-          title: 'Habitica settings',
-          url: './settings.html', // Check out public/authorize.html to see how to ask a user to auth
-          height: 240,
-        })
-      )
+      text: currentUser.loggedIn ? currentUser.name : 'Login',
+      callback: currentUser.loggedIn ? settingsPage : loginPage
     }]
-  ),
-  'card-badges': t => {
-    syncWithHabiticaTask(t)
-    return getBadges(t)
+  },
+  'card-badges': async (t) => {
+    let storage = new Storage(t)
+    let currentUser = await storage.getUser()
+    if (!currentUser.loggedIn) return []
+
+    return syncWithHabitica(t, storage).then(async () => {
+      let taskStorage = await storage.getTask()
+      return [
+        { icon: taskStorage.id ? ICONS.TASK_DOING : null }, 
+        { icon: taskStorage.done ? ICONS.TASK_DONE : null }
+      ]
+    })
   },
   'card-detail-badges': async (t) => {
+    let taskStorage = await new Storage(t).getTask()
+    if (!taskStorage.id) return []
+
     return [{
       title: 'To-Do',
       text: 'Edit',
@@ -136,96 +142,44 @@ TrelloPowerUp.initialize({
       )
     }]
   },
-  'list-actions': t => (
-    t.get('board', 'private', 'lists', {}).then(lists => (
-      t.list('id').then(list => {
+  'list-actions': async (t) => {
+    let storage = new Storage(t)
+    let currentUser = await storage.getUser()
+    if (!currentUser.loggedIn) return []
+  
+    return storage.getLists().then(lists => {
+      return t.list('id').then(list => {
         let listType = lists[list.id]
 
         if (listType == LIST_TYPES.DOING) {
           return [{
             text: 'Unmark list as "Doing"',
-            callback: (t) => new HabiticaList(t).unmark()
+            callback: (t) => 
+              new List(t).unmark()
           }]
         } else if (listType == LIST_TYPES.DONE) {
           return [{
             text: 'Unmark list as "Done"',
-            callback: (t) => new HabiticaList(t).unmark()
+            callback: (t) => 
+              new List(t).unmark()
           }]
         } else {
           return [{
             text: 'Mark list as "Doing"',
-            callback: (t) => new HabiticaList(t).markAsDoing()
+            callback: (t) => 
+              new List(t).markAsDoing()
           },
           {
             text: 'Mark list as "Done"',
-            callback: (t) => new HabiticaList(t).markAsDone()
+            callback: (t) => 
+              new List(t).markAsDone()
           }]
         }
       })
-    ))
-  ),
-  'show-settings': (t, options) => (
-    // when a user clicks the gear icon by your Power-Up in the Power-Ups menu
-    // what should Trello show. We highly recommend the popup in this case as
-    // it is the least disruptive, and fits in well with the rest of Trello's UX
-    t.popup({
-      title: 'Settings',
-      url: './settings.html',
-      height: 184 // we can always resize later, but if we know the size in advance, its good to tell Trello
     })
-  ),
-  
-  /*        
-      
-      🔑 Authorization Capabiltiies 🗝
-      
-      The following two capabilities should be used together to determine:
-      1. whether a user is appropriately authorized
-      2. what to do when a user isn't completely authorized
-      
-  */
-  'authorization-status': (t, options) => (
-    // Return a promise that resolves to an object with a boolean property 'authorized' of true or false
-    // The boolean value determines whether your Power-Up considers the user to be authorized or not.
-    
-    // When the value is false, Trello will show the user an "Authorize Account" options when
-    // they click on the Power-Up's gear icon in the settings. The 'show-authorization' capability
-    // below determines what should happen when the user clicks "Authorize Account"
-    
-    // For instance, if your Power-Up requires a token to be set for the member you could do the following:
-    t.get('member', 'private', 'token')
-    // Or if you needed to set/get a non-Trello secret token, like an oauth token, you could
-    // use t.storeSecret('key', 'value') and t.loadSecret('key')
-    .then(token => {
-      if(token){
-        return { authorized: true }
-      }
-      return { authorized: false }
-    })
-    // You can also return the object synchronously if you know the answer synchronously.
-  ),
-  'show-authorization': (t, options) => {
-    // Returns what to do when a user clicks the 'Authorize Account' link from the Power-Up gear icon
-    // which shows when 'authorization-status' returns { authorized: false }.
-    
-    // If we want to ask the user to authorize our Power-Up to make full use of the Trello API
-    // you'll need to add your API from trello.com/app-key below:
-    let trelloAPIKey = ''
-    // This key will be used to generate a token that you can pass along with the API key to Trello's
-    // RESTful API. Using the key/token pair, you can make requests on behalf of the authorized user.
-    
-    // In this case we'll open a popup to kick off the authorization flow.
-    if (trelloAPIKey) {
-      return t.popup({
-        title: 'My Auth Popup',
-        args: { apiKey: trelloAPIKey }, // Pass in API key to the iframe
-        url: './authorize.html', // Check out public/authorize.html to see how to ask a user to auth
-        height: 140,
-      })
-    } else {
-      console.log("🙈 Looks like you need to add your API key to the project!")
-    }
   }
 })
+
+storage = new Storage(t)
 
 console.log('Loaded by: ' + document.referrer)
