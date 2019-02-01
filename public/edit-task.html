@@ -4,10 +4,10 @@
     <link rel="stylesheet" href="https://p.trellocdn.com/power-up.min.css">
     <script src="https://p.trellocdn.com/power-up.min.js"></script>
     <script src="js/constants.js"></script>
-    <script src="js/habitica_storage.js"></script>
+    <script src="js/storage.js"></script>
     <script src="js/habitica_api.js"></script>
-    <script src="js/habitica_task.js"></script>
-    <script src="js/habitica_list.js"></script>
+    <script src="js/task.js"></script>
+    <script src="js/list.js"></script>
   </head>
   <body>
 
@@ -23,10 +23,9 @@
   
     <script>
       let t = TrelloPowerUp.iframe()
+      let storage = new Storage(t)
       let $submitButton = document.getElementById('submit-btn')
-    
       let $priority = document.getElementById('priority')
-      let storage = new HabiticaStorage(t)
 
       storage.getTask().then(task => {
         $priority.value = task.priority
@@ -37,9 +36,10 @@
         
         storage.getTask().then(task => {
           if (task.priority != $priority.value) {
-            return new HabiticaTask(t).handleUpdate({
+            return new Task(t).handleUpdate({
                 priority: $priority.value
-              }).then(() => t.closePopup())
+              })
+              .then(() => t.closePopup())
           } else {
             return t.closePopup()
           }
