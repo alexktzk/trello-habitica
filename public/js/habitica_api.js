@@ -1,7 +1,7 @@
 class HabiticaApi {
   constructor(
     trello, 
-    storage = new HabiticaStorage(trello)
+    storage = new Storage(trello)
   ) {
     this.t = trello
     this.storage = storage
@@ -33,19 +33,20 @@ class HabiticaApi {
     }
   }
 
-  handleError(error) {
-    let message = ''
-    
+  async handleError(error) {
     if (error.status == 401) {
-      message = "Unauthorized.\nUser ID or API Token is invalid."
-      this.notify(message, 'error')
+      await this.storage.removeUser().then(() => (
+        this.notify(
+          "Wrong User ID or API Token. Try to login again.", 
+          'error'
+        )
+      ))
     } else if (error.status == 404) {
-      this.storage.removeTask()
+      await this.storage.removeTask()
     }
 
     console.error(error)
-    // throw Error(`${error.status}: ${message}`)
-    return res
+    return error
   }
   
   addTask(params) {
@@ -77,6 +78,12 @@ class HabiticaApi {
     return this.request(API + `/tasks/${id}`, {
       method: 'PUT',
       body: JSON.stringify(params)
+    })
+  }
+
+  getUserProfile() {
+    return this.request(API + '/user?userFields=profile', {
+      method: 'GET'
     })
   }
 

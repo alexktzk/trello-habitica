@@ -1,7 +1,7 @@
-class HabiticaList {
+class List {
   constructor(
     trello,
-    storage = new HabiticaStorage(trello)
+    storage = new Storage(trello)
   ) {
     this.t = trello
     this.storage = storage
@@ -47,4 +47,4 @@ class HabiticaList {
 }
 
 // Fails in a browser, but required for tests.
-try { module.exports = HabiticaList } catch(_) {}
+try { module.exports = List } catch(_) {}
