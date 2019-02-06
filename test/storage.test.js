@@ -3,7 +3,7 @@ const Storage = require('../public/js/storage')
 describe('Storage class', () => {
   describe('constructor', () => {
     it('assigns passed trello storage to local t variable', () => {
-      let t = { mockFunction: jest.fn() }
+      let t = { mockStorage: jest.fn() }
       let storage = new Storage(t)
       expect(storage.t).toBeDefined()
       expect(storage.t).toBe(t)
