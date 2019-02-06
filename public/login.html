@@ -35,16 +35,13 @@
           t.storeSecret('apiToken', $apiToken.value)
         ])
 
-        // if ((userId != $userId.value) || (apiToken != $apiToken.value)) {
-          let api = new HabiticaApi(t)
-          return await api.getUserProfile().then(res => {
-            localStorage.setItem('currentUser', res.data.profile.name)
-            return storage.setUser({
-              name: res.data.profile.name,
-              loggedIn: true
-            }).then(() => t.closePopup())
-          })
-        // }
+        let api = new HabiticaApi(t)
+        return await api.getUserProfile().then(res => {
+          return storage.setUser({
+            name: res.data.profile.name,
+            loggedIn: true
+          }).then(() => t.closePopup())
+        })
       })
     </script>
   </body>

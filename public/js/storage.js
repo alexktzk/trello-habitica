@@ -1,6 +1,7 @@
 class Storage {
   constructor(trello) {
     this.t = trello
+    this.p
   }
   
   getAll() {
@@ -34,7 +35,7 @@ class Storage {
   }
 
   setTask(obj) {
-    return this.t.get('card', 'private', 'task').then(current => {
+    return this.t.get('card', 'private', 'task', {}).then(current => {
       return this.t.set('card', 'private', 'task', Object.assign({}, current, obj));
     });
   }
@@ -52,7 +53,7 @@ class Storage {
   }
 
   setSettings(obj) {
-    return this.t.get('board', 'private', 'settings').then(current => {
+    return this.t.get('board', 'private', 'settings', {}).then(current => {
       return this.t.set('board', 'private', 'settings', Object.assign({}, current, obj));
     });
   }
@@ -66,3 +67,5 @@ class Storage {
   }
 }
 
+// Fails in a browser, but required for tests.
+try { module.exports = Storage } catch(_) {}
