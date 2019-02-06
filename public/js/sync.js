@@ -1,3 +1,13 @@
+const LIST_TYPES = {
+  DONE: 'done',
+  DOING: 'doing'
+}
+
+const CARD_SCOPES = {
+  ASSIGNED_TO_ME: 'me',
+  NONE: 'none'
+}
+
 class Sync {
   constructor(
     trello,

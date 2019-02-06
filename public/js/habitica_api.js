@@ -1,3 +1,5 @@
+const API = 'https://habitica.com/api/v3'
+
 class HabiticaApi {
   constructor(
     trello, 

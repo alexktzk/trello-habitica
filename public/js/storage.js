@@ -1,7 +1,6 @@
 class Storage {
   constructor(trello) {
     this.t = trello
-    this.p
   }
   
   getAll() {

@@ -1,3 +1,8 @@
+const LIST_TYPES = {
+  DONE: 'done',
+  DOING: 'doing'
+}
+
 class List {
   constructor(
     trello,
