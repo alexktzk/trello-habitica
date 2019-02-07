@@ -1,4 +1,4 @@
-const LIST_TYPES = {
+LIST_TYPES = {
   DONE: 'done',
   DOING: 'doing'
 }

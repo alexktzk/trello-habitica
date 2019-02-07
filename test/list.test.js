@@ -1,7 +1,7 @@
 const Storage = require('../public/js/storage')
 const List = require('../public/js/list')
 
-const LIST_TYPES = {
+LIST_TYPES = {
   DONE: 'done',
   DOING: 'doing'
 }
@@ -27,7 +27,7 @@ describe('List class', () => {
       list = new List(t, storage)
     }) 
 
-    it('assigns passed trello storage to local t variable', () => {
+    it('assigns passed trello instance to local t variable', () => {
       expect(list.t).toBeDefined()
       expect(list.t).toBe(t)
     })
