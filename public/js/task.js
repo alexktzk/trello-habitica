@@ -59,11 +59,8 @@ class Task {
       .then(_ => this.storage.setTask({ done: false }))
   }
 
-  async handleUpdate(args) {
+  async handleUpdate(params) {
     let task = await this.storage.getTask()
-    let params = {
-      priority: args.priority
-    }
 
     return this.API.updateTask(task.id, params)
       .then(res => (

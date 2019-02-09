@@ -6,13 +6,7 @@ jest.mock('../public/js/habitica_api')
 
 describe('Task class', () => {
   describe('constructor', () => {
-    let t, storage, API, task
-
-    beforeAll(() => {
-      t = {}
-      storage = new Storage(t)
-      API = new HabiticaApi(t, storage)
-    })
+    let t = {}, storage = {}, API = {}, task
 
     beforeEach(() => {
       task = new Task(t, storage, API)
@@ -35,12 +29,13 @@ describe('Task class', () => {
   })
 
   describe('.template()', () => {
-    let t, storage, API, task, card
+    let t = {}, storage, API = {}, task, card
 
     beforeAll(() => {
-      t = { get: jest.fn(() => ({ priority: 1 }) ) }
-      storage = new Storage(t)
-      API = new HabiticaApi(t, storage)
+      settings = { priority: 1 }
+      storage = {
+        getSettings: jest.fn(async () => settings)
+      }
       card = {
         shortLink: 'asdf',
         name: 'Card name'
@@ -52,25 +47,22 @@ describe('Task class', () => {
     })
 
     it('gets settings from the storage', async () => {
-      let getSettings = jest.spyOn(storage, 'getSettings')
       await task.template(card)
-      expect(getSettings).toBeCalled()
+      expect(task.storage.getSettings).toBeCalled()
     })
 
     it('assigns task type as "todo"', async () => {
       let template = await task.template(card)
-      expect(template.type).toBeDefined()
       expect(template.type).toBe('todo')
     })
 
     it('assigns default difficulty(priority) for todo', async () => {
       let template = await task.template(card)
-      expect(template.priority).toBeDefined()
+      expect(template.priority).toBe(settings.priority)
     })
 
     it('uses card name as text for todo', async () => {
       let template = await task.template(card)
-      expect(template.text).toBeDefined()
       expect(template.text).toMatch(card.name)
     })
 
@@ -81,7 +73,7 @@ describe('Task class', () => {
   })
 
   describe('.handleAdd()', () => {
-    let t, storage, API, task, res
+    let t, storage, API, task, cardData, res
 
     beforeAll(() => {
       cardData = {
@@ -89,12 +81,11 @@ describe('Task class', () => {
         name: 'Card name'
       }
       t = { 
-        get: jest.fn(async () => ({ priority: 1 }) ),
-        set: jest.fn(() => ({}) ),
-        card: jest.fn(() => cardData)
+        card: jest.fn(async () => cardData) 
       }
-      storage = new Storage(t)
-      API = new HabiticaApi(t, storage)
+      storage = { 
+        setTask: jest.fn() 
+      }
       res = { 
         data: {
           id: 123,
@@ -103,50 +94,53 @@ describe('Task class', () => {
           priority: 1
         } 
       }
-      API.addTask.mockImplementation(async () => res)
+      API = { 
+        addTask: jest.fn(async () => res) 
+      }
+      templateSample = {
+        type: 'todo',
+        text: 'Todo text'
+      }
     })
 
     beforeEach(() => {
       task = new Task(t, storage, API)
+      task.template = jest.fn(async () => templateSample)
     })
 
     it('gets card data from the storage', async () => {
-      let card = jest.spyOn(task.t, 'card')
       await task.handleAdd()
-      expect(card).toBeCalled()
+      expect(task.t.card).toBeCalledWith('name', 'shortLink')
     })
 
     it('generates request template', async () => {
-      let template = jest.spyOn(task, 'template')
       await task.handleAdd()
-      expect(template).toBeCalled()
+      expect(task.template).toBeCalledWith(cardData)
     })
 
     it('adds a task by using API', async () => {
-      let addTask = jest.spyOn(task.API, 'addTask')
       await task.handleAdd()
-      expect(addTask).toBeCalled()
+      expect(task.API.addTask).toBeCalledWith(templateSample)
     })
 
     it('stores response in the storage', async () => {
-      let setTask = jest.spyOn(task.storage, 'setTask')
       await task.handleAdd()
-      expect(setTask).toBeCalled()
-      expect(setTask).toBeCalledWith(res.data)
+      expect(task.storage.setTask).toBeCalledWith(res.data)
     })
   })
 
   describe('.handleRemove()', () => {
-    let t, storage, API, task
+    let t = {}, storage, API, task
 
     beforeAll(() => {
-      t = { 
-        get: jest.fn(() => ({}) ),
-        remove: jest.fn(() => ({}) )
+      taskData = { id: 123 }
+      storage = {
+        getTask: jest.fn(async () => taskData ),
+        removeTask: jest.fn(async () => ({}) )
       }
-      storage = new Storage(t)
-      API = new HabiticaApi(t, storage)
-      API.removeTask.mockImplementation(async () => ({}) )
+      API = {
+        removeTask: jest.fn(async () => ({}) )
+      }
     })
 
     beforeEach(() => {
@@ -154,35 +148,33 @@ describe('Task class', () => {
     })
 
     it('gets task data from the storage', async () => {
-      let getTask = jest.spyOn(task.storage, 'getTask')
       await task.handleRemove()
-      expect(getTask).toBeCalled()
+      expect(task.storage.getTask).toBeCalledWith()
     })
 
     it('removes the task by using API', async () => {
-      let removeTask = jest.spyOn(task.API, 'removeTask')
       await task.handleRemove()
-      expect(removeTask).toBeCalled()
+      expect(task.API.removeTask).toBeCalledWith(taskData.id)
     })
 
     it('removes task data from the storage', async () => {
-      let removeTask = jest.spyOn(task.storage, 'removeTask')
       await task.handleRemove()
-      expect(removeTask).toBeCalled()
+      expect(task.storage.removeTask).toBeCalledWith()
     })
   })
 
   describe('.handleDo()', () => {
-    let t, storage, API, task
+    let t = {}, storage, API, task
 
     beforeAll(() => {
-      t = { 
-        get: jest.fn(async () => ({}) ),
-        set: jest.fn(() => ({}) )
+      taskData = { id: 123 }
+      storage = {
+        getTask: jest.fn(async () => taskData),
+        setTask: jest.fn(async () => ({}) )
       }
-      storage = new Storage(t)
-      API = new HabiticaApi(t, storage)
-      API.doTask.mockImplementation(async () => ({}) )
+      API = {
+        doTask: jest.fn(async () => ({}) )
+      }
     })
 
     beforeEach(() => {
@@ -190,22 +182,18 @@ describe('Task class', () => {
     })
 
     it('gets task data from the storage', async () => {
-      let getTask = jest.spyOn(task.storage, 'getTask')
       await task.handleDo()
-      expect(getTask).toBeCalled()
+      expect(task.storage.getTask).toBeCalledWith()
     })
 
     it('do task by using API', async () => {
-      let doTask = jest.spyOn(task.API, 'doTask')
       await task.handleDo()
-      expect(doTask).toBeCalled()
+      expect(task.API.doTask).toBeCalledWith(taskData.id)
     })
 
     it('marks task as done in the storage', async () => {
-      let setTask = jest.spyOn(task.storage, 'setTask')
       await task.handleDo()
-      expect(setTask).toBeCalled()
-      expect(setTask).toBeCalledWith({ done: true })
+      expect(task.storage.setTask).toBeCalledWith({ done: true })
     })
   })
 
@@ -213,13 +201,14 @@ describe('Task class', () => {
     let t, storage, API, task
 
     beforeAll(() => {
-      t = { 
-        get: jest.fn(async () => ({}) ),
-        set: jest.fn(() => ({}) )
+      taskData = { id: 123 }
+      storage = {
+        getTask: jest.fn(async () => taskData),
+        setTask: jest.fn(async () => ({}) )
       }
-      storage = new Storage(t)
-      API = new HabiticaApi(t, storage)
-      API.undoTask.mockImplementation(async () => ({}) )
+      API = {
+        undoTask: jest.fn(async () => ({}) )
+      }
     })
 
     beforeEach(() => {
@@ -227,38 +216,35 @@ describe('Task class', () => {
     })
 
     it('gets task data from the storage', async () => {
-      let getTask = jest.spyOn(task.storage, 'getTask')
       await task.handleUndo()
-      expect(getTask).toBeCalled()
+      expect(task.storage.getTask).toBeCalledWith()
     })
 
     it('undo task by using API', async () => {
-      let undoTask = jest.spyOn(task.API, 'undoTask')
       await task.handleUndo()
-      expect(undoTask).toBeCalled()
+      expect(task.API.undoTask).toBeCalledWith(taskData.id)
     })
 
     it('marks task as not done in the storage', async () => {
-      let setTask = jest.spyOn(task.storage, 'setTask')
       await task.handleUndo()
-      expect(setTask).toBeCalled()
-      expect(setTask).toBeCalledWith({ done: false })
+      expect(task.storage.setTask).toBeCalledWith({ done: false })
     })
   })
 
   describe('.handleUpdate()', () => {
-    let t, storage, API, task, res
+    let t = {}, storage, API, task, res
 
     beforeAll(() => {
-      args = { priority: 1 }
-      t = { 
-        get: jest.fn(async () => ({}) ),
-        set: jest.fn(() => ({}) )
+      taskData = { id: 123 }
+      params = { priority: 1 }
+      storage = {
+        getTask: jest.fn(async () => taskData),
+        setTask: jest.fn(async () => ({}) ),
       }
-      storage = new Storage(t)
-      API = new HabiticaApi(t, storage)
-      res = { data: args }
-      API.updateTask.mockImplementation(async () => res)
+      res = { data: params }
+      API = {
+        updateTask: jest.fn(async () => res)
+      }
     })
 
     beforeEach(() => {
@@ -266,22 +252,18 @@ describe('Task class', () => {
     })
 
     it('gets task data from the storage', async () => {
-      let getTask = jest.spyOn(task.storage, 'getTask')
-      await task.handleUpdate(args)
-      expect(getTask).toBeCalled()
+      await task.handleUpdate(params)
+      expect(task.storage.getTask).toBeCalledWith()
     })
 
     it('updates the task by using API', async () => {
-      let updateTask = jest.spyOn(task.API, 'updateTask')
-      await task.handleUpdate(args)
-      expect(updateTask).toBeCalled()
+      await task.handleUpdate(params)
+      expect(task.API.updateTask).toBeCalledWith(taskData.id, params)
     })
 
     it('stores response in the storage', async () => {
-      let setTask = jest.spyOn(task.storage, 'setTask')
-      await task.handleUpdate(args)
-      expect(setTask).toBeCalled()
-      expect(setTask).toBeCalledWith(res.data)
+      await task.handleUpdate(params)
+      expect(task.storage.setTask).toBeCalledWith(res.data)
     })
   })
 })
