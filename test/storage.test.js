@@ -55,17 +55,17 @@ describe('Storage class', () => {
       storage = new Storage(t)
     })
 
-    it('removes lists', async () => {
+    it('removes the lists', async () => {
       await storage.removeAll()
       expect(t.remove).toBeCalledWith('board', 'private', 'lists')
     })
 
-    it('removes user', async () => {
+    it('removes the user', async () => {
       await storage.removeAll()
       expect(t.remove).toBeCalledWith('board', 'private', 'user')
     })
 
-    it('removes settings', async () => {
+    it('removes the settings', async () => {
       await storage.removeAll()
       expect(t.remove).toBeCalledWith('board', 'private', 'settings')
     })

@@ -101,7 +101,7 @@ describe('List class', () => {
       list = new List(t, storage)
     }) 
 
-    it('gets lists from storage', async () => {
+    it('gets lists from the storage', async () => {
       let getLists = jest.spyOn(storage, 'getLists')
       await list.mark(listType)
       expect(getLists).toBeCalled()
@@ -154,7 +154,7 @@ describe('List class', () => {
       list = new List(t, storage)
     }) 
 
-    it('gets lists from storage', async () => {
+    it('gets lists from the storage', async () => {
       let getLists = jest.spyOn(storage, 'getLists')
       await list.unmark()
       expect(getLists).toBeCalled()

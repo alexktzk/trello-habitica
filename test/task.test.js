@@ -51,7 +51,7 @@ describe('Task class', () => {
       task = new Task(t, storage, API)
     })
 
-    it('gets settings from storage', async () => {
+    it('gets settings from the storage', async () => {
       let getSettings = jest.spyOn(storage, 'getSettings')
       await task.template(card)
       expect(getSettings).toBeCalled()
@@ -110,7 +110,7 @@ describe('Task class', () => {
       task = new Task(t, storage, API)
     })
 
-    it('gets card data from storage', async () => {
+    it('gets card data from the storage', async () => {
       let card = jest.spyOn(task.t, 'card')
       await task.handleAdd()
       expect(card).toBeCalled()
@@ -122,13 +122,13 @@ describe('Task class', () => {
       expect(template).toBeCalled()
     })
 
-    it('adds task by using API', async () => {
+    it('adds a task by using API', async () => {
       let addTask = jest.spyOn(task.API, 'addTask')
       await task.handleAdd()
       expect(addTask).toBeCalled()
     })
 
-    it('stores response in storage', async () => {
+    it('stores response in the storage', async () => {
       let setTask = jest.spyOn(task.storage, 'setTask')
       await task.handleAdd()
       expect(setTask).toBeCalled()
@@ -153,19 +153,19 @@ describe('Task class', () => {
       task = new Task(t, storage, API)
     })
 
-    it('gets task data from storage', async () => {
+    it('gets task data from the storage', async () => {
       let getTask = jest.spyOn(task.storage, 'getTask')
       await task.handleRemove()
       expect(getTask).toBeCalled()
     })
 
-    it('removes task by using API', async () => {
+    it('removes the task by using API', async () => {
       let removeTask = jest.spyOn(task.API, 'removeTask')
       await task.handleRemove()
       expect(removeTask).toBeCalled()
     })
 
-    it('removes task data from storage', async () => {
+    it('removes task data from the storage', async () => {
       let removeTask = jest.spyOn(task.storage, 'removeTask')
       await task.handleRemove()
       expect(removeTask).toBeCalled()
@@ -189,7 +189,7 @@ describe('Task class', () => {
       task = new Task(t, storage, API)
     })
 
-    it('gets task data from storage', async () => {
+    it('gets task data from the storage', async () => {
       let getTask = jest.spyOn(task.storage, 'getTask')
       await task.handleDo()
       expect(getTask).toBeCalled()
@@ -201,7 +201,7 @@ describe('Task class', () => {
       expect(doTask).toBeCalled()
     })
 
-    it('marks task as done in storage', async () => {
+    it('marks task as done in the storage', async () => {
       let setTask = jest.spyOn(task.storage, 'setTask')
       await task.handleDo()
       expect(setTask).toBeCalled()
@@ -226,7 +226,7 @@ describe('Task class', () => {
       task = new Task(t, storage, API)
     })
 
-    it('gets task data from storage', async () => {
+    it('gets task data from the storage', async () => {
       let getTask = jest.spyOn(task.storage, 'getTask')
       await task.handleUndo()
       expect(getTask).toBeCalled()
@@ -238,7 +238,7 @@ describe('Task class', () => {
       expect(undoTask).toBeCalled()
     })
 
-    it('marks task as not done in storage', async () => {
+    it('marks task as not done in the storage', async () => {
       let setTask = jest.spyOn(task.storage, 'setTask')
       await task.handleUndo()
       expect(setTask).toBeCalled()
@@ -265,19 +265,19 @@ describe('Task class', () => {
       task = new Task(t, storage, API)
     })
 
-    it('gets task data from storage', async () => {
+    it('gets task data from the storage', async () => {
       let getTask = jest.spyOn(task.storage, 'getTask')
       await task.handleUpdate(args)
       expect(getTask).toBeCalled()
     })
 
-    it('updates task by using API', async () => {
+    it('updates the task by using API', async () => {
       let updateTask = jest.spyOn(task.API, 'updateTask')
       await task.handleUpdate(args)
       expect(updateTask).toBeCalled()
     })
 
-    it('stores response in storage', async () => {
+    it('stores response in the storage', async () => {
       let setTask = jest.spyOn(task.storage, 'setTask')
       await task.handleUpdate(args)
       expect(setTask).toBeCalled()

@@ -130,16 +130,16 @@ t = TrelloPowerUp.initialize({
     if (!currentUser.loggedIn) return []
 
     return syncWithHabitica(t, storage).then(async () => {
-      let taskStorage = await storage.getTask()
+      let taskData = await storage.getTask()
       return [
-        { icon: taskStorage.id ? ICONS.TASK_DOING : null }, 
-        { icon: taskStorage.done ? ICONS.TASK_DONE : null }
+        { icon: taskData.id ? ICONS.TASK_DOING : null }, 
+        { icon: taskData.done ? ICONS.TASK_DONE : null }
       ]
     })
   },
   'card-detail-badges': async (t) => {
-    let taskStorage = await new Storage(t).getTask()
-    if (!taskStorage.id) return []
+    let taskData = await new Storage(t).getTask()
+    if (!taskData.id) return []
 
     return [{
       title: 'To-Do',
