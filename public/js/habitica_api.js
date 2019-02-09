@@ -16,7 +16,7 @@ class HabiticaApi {
 
     let params = Object.assign({}, defaultParams, userParams)
     return fetch(url, params)
-      .then((res) => this.handleResponse(res))
+      .then(res => this.handleResponse(res))
   }
 
   async authHeaders() {
@@ -47,7 +47,6 @@ class HabiticaApi {
       await this.storage.removeTask()
     }
 
-    console.error(error)
     return error
   }
   
@@ -58,9 +57,10 @@ class HabiticaApi {
     })
   }
 
-  removeTask(id) {
+  updateTask(id, params) {
     return this.request(API + `/tasks/${id}`, {
-      method: 'DELETE',
+      method: 'PUT',
+      body: JSON.stringify(params)
     })
   }
 
@@ -76,10 +76,9 @@ class HabiticaApi {
     })
   }
 
-  updateTask(id, params) {
+  removeTask(id) {
     return this.request(API + `/tasks/${id}`, {
-      method: 'PUT',
-      body: JSON.stringify(params)
+      method: 'DELETE',
     })
   }
 
