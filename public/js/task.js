@@ -11,7 +11,7 @@ class Task {
     this.API = API
   }
 
-  async template(card) {
+  async getTemplate(card) {
     let cardUrl = `https://trello.com/c/${card.shortLink}`
     let settings = await this.storage.getSettings()
 
@@ -25,7 +25,7 @@ class Task {
 
   async handleAdd() {
     let card = await this.t.card('name', 'shortLink')
-    let params = await this.template(card)
+    let params = await this.getTemplate(card)
 
     return this.API.addTask(params)
       .then(res => (

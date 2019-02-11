@@ -7,21 +7,14 @@ LIST_TYPES = {
 }
 
 const minimalT = {
-  get: jest.fn(() => ({}) ),
   list: jest.fn(() => ({ id: 123, name: 'List name' }) ),
   closePopup: jest.fn(),
-  alert: jest.fn(),
-  set: jest.fn()
+  alert: jest.fn()
 }
 
 describe('List class', () => {
   describe('constructor', () => {
-    let t, storage, list
-
-    beforeAll(() => {
-      t = { get: jest.fn(() => {}), set: jest.fn() }
-      storage = new Storage(t)
-    })
+    let t = {}, storage = {}, list
 
     beforeEach(() => {
       list = new List(t, storage)
@@ -39,62 +32,50 @@ describe('List class', () => {
   })
 
   describe('.markAsDone()', () => {
-    let t, storage, list
-
-    beforeAll(() => {
-      t = minimalT
-      storage = new Storage(t)
-    })
+    let t = {}, storage = {}, list
 
     beforeEach(() => {
       list = new List(t, storage)
     }) 
 
-    it('calls .mark()', async() => {
-      let mark = jest.spyOn(list, 'mark')
-      list.markAsDone()
-      expect(mark).toBeCalled()
-    })
-
     it('calls .mark() with proper args', () => {
-      let mark = jest.spyOn(list, 'mark')
+      expect(list.mark).toBeDefined()
+      list.mark = jest.fn()
       list.markAsDone()
-      expect(mark).toBeCalledWith(LIST_TYPES.DONE)
+      expect(list.mark).toBeCalledWith(LIST_TYPES.DONE)
     })
   })
 
   describe('.markAsDoing()', () => {
-    let t, storage, list, lists
-
-    beforeAll(() => {
-      t = minimalT
-      storage = new Storage(t)
-    })
+    let t = {}, storage = {}, list
 
     beforeEach(() => {
       list = new List(t, storage)
     }) 
 
-    it('calls .mark()', async() => {
-      let mark = jest.spyOn(list, 'mark')
-      list.markAsDoing()
-      expect(mark).toBeCalled()
-    })
-
     it('calls .mark() with proper args', () => {
-      let mark = jest.spyOn(list, 'mark')
+      expect(list.mark).toBeDefined()
+      list.mark = jest.fn()
       list.markAsDoing()
-      expect(mark).toBeCalledWith(LIST_TYPES.DOING)
+      expect(list.mark).toBeCalledWith(LIST_TYPES.DOING)
     })
   })
 
   describe('.mark()', () => {
-    let t, storage, list, listType
+    let t, storage, list, lists = {}, listType
 
     beforeAll(() => {
-      t = minimalT
-      storage = new Storage(t)
+      listData = { id: 456 }
+      t = {
+        closePopup: jest.fn(),
+        alert: jest.fn(),
+        list: jest.fn(() => listData)
+      }
       listType = LIST_TYPES.DOING
+      storage = {
+        getLists: jest.fn(async () => lists ),
+        setLists: jest.fn(async () => ({}) )
+      }
     })
 
     beforeEach(() => {
@@ -102,52 +83,55 @@ describe('List class', () => {
     }) 
 
     it('gets lists from the storage', async () => {
-      let getLists = jest.spyOn(storage, 'getLists')
       await list.mark(listType)
-      expect(getLists).toBeCalled()
+      expect(list.storage.getLists).toBeCalledWith()
     })
 
     it('gets list data', async () => {
       await list.mark(listType)
-      expect(t.list).toBeCalled()
+      expect(list.t.list).toBeCalled()
     })
 
     it('updates current list type', async () => {
-      let listData = t.list()
-      let setLists = jest.spyOn(storage, 'setLists')
       await list.mark(listType)
-      expect(setLists).toBeCalledWith({ [listData.id]: listType })
+      expect(list.storage.setLists).toBeCalledWith({ [listData.id]: listType })
     })
 
     it('closes popup', async () => {
       await list.mark(listType)
-      expect(t.closePopup).toBeCalled()
+      expect(list.t.closePopup).toBeCalledWith()
     })
 
     it('notifies', async () => {
-      let notify = jest.spyOn(list, 'notify')
+      expect(list.notify).toBeDefined()
+      list.notify = jest.fn()
       await list.mark(listType)
-      expect(notify).toBeCalled()
+      expect(list.notify).toBeCalled()
     })
 
     it('saves updated lists to storage', async () => {
-      let setLists = jest.spyOn(storage, 'setLists')
       await list.mark(listType)
-      expect(setLists).toBeCalled()
+      expect(list.storage.setLists).toBeCalledWith(Object.assign({}, lists, {
+        [listData.id]: listType
+      }))
     })
   })
 
   describe('.unmark()', () => {
-    let t, storage, list, listType, currentList
+    let t, storage, list, listData, lists
 
     beforeAll(() => {
-      currentList = { id: 37, name: 'List name'}
-      t = Object.assign({}, minimalT, {
-        get: jest.fn(() => ({ [currentList.id]: 'done' }) ),
-        list: jest.fn(() => currentList)
-      })
-      storage = new Storage(t)
-      listType = LIST_TYPES.DOING
+      listData = { id: 37, name: 'List name' }
+      lists = { [listData.id]: 'done' }
+      t = {
+        list: jest.fn(() => listData),
+        closePopup: jest.fn(),
+        alert: jest.fn()
+      }
+      storage = {
+        getLists: jest.fn(async () => lists),
+        setLists: jest.fn(async () => ({}) )
+      }
     })
 
     beforeEach(() => {
@@ -155,37 +139,37 @@ describe('List class', () => {
     }) 
 
     it('gets lists from the storage', async () => {
-      let getLists = jest.spyOn(storage, 'getLists')
       await list.unmark()
-      expect(getLists).toBeCalled()
+      expect(list.storage.getLists).toBeCalled()
     })
 
     it('gets list data', async () => {
       await list.unmark()
-      expect(t.list).toBeCalled()
+      expect(list.t.list).toBeCalled()
     })
 
     it('deletes current list from lists', async () => {
-      let setLists = jest.spyOn(storage, 'setLists')
       await list.unmark()
-      expect(setLists).toBeCalledWith({})
+      expect(list.storage.setLists).toBeCalledWith({})
     })
 
     it('closes popup', async () => {
       await list.unmark()
-      expect(t.closePopup).toBeCalled()
+      expect(list.t.closePopup).toBeCalled()
     })
 
     it('notifies', async () => {
-      let notify = jest.spyOn(list, 'notify')
+      expect(list.notify).toBeDefined()
+      list.notify = jest.fn()
       await list.unmark()
-      expect(notify).toBeCalled()
+      expect(list.notify).toBeCalled()
     })
 
     it('saves updated lists to storage', async () => {
-      let setLists = jest.spyOn(storage, 'setLists')
       await list.unmark()
-      expect(setLists).toBeCalled()
+      expect(list.storage.setLists).toBeCalledWith(
+        expect.not.objectContaining({ [listData.id]: expect.anything() })
+      )
     })
   })
 })

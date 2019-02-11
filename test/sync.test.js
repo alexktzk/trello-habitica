@@ -11,12 +11,7 @@ let getTaskMock = jest.fn(() => taskMock)
 
 describe('Sync class', () => {
   describe('constructor', () => {
-    let t, storage, sync
-
-    beforeAll(() => {
-      t = {}
-      storage = new Storage(t)
-    })
+    let t = {}, storage = {}, sync
 
     beforeEach(() => {
       sync = new Sync(t, storage)
@@ -38,12 +33,18 @@ describe('Sync class', () => {
       let t, storage, sync
 
       beforeAll(() => {
+        cardData = { members: [] }
+        settings = { scope: 'all' }
+        context = { member: 123 }
         t = {
-          get: () => ({ scope: 'all' }),
-          card: () => ({ members: [] }),
-          getContext: () => ({ member: 123 })
+          card: jest.fn(async () => cardData),
+          getContext: jest.fn(async () => context)
         }
-        storage = new Storage(t)
+        storage = {
+          getTask: jest.fn(async () => ({}) ),
+          getSettings: jest.fn(async () => settings),
+          getLists: jest.fn(async () => ({}) )
+        }
       })
 
       beforeEach(() => {
@@ -51,41 +52,44 @@ describe('Sync class', () => {
       })
 
       it('gets card data from the storage', async () => {
-        let card = jest.spyOn(sync.t, 'card')
         await sync.start()
-        expect(card).toBeCalled()
+        expect(sync.t.card).toBeCalledWith('id', 'idList', 'members')
       })
 
       it('gets settings from the storage', async () => {
-        let getSettings = jest.spyOn(sync.storage, 'getSettings')
         await sync.start()
-        expect(getSettings).toBeCalled()
+        expect(sync.storage.getSettings).toBeCalledWith()
       })
 
       it('gets task data from the storage', async () => {
-        let getTask = jest.spyOn(sync.storage, 'getTask')
         await sync.start()
-        expect(getTask).toBeCalled()
+        expect(sync.storage.getTask).toBeCalledWith()
       })
 
     })
 
     describe('when syncing only cards that was assigned to me', () => {
-      let t, storage, sync, me
+      let t = {}, storage = {}, sync, me
 
       beforeAll(() => {
+        taskData = { id: 456, priority: 1 }
         me = { id: 123 }
+        settings = { scope: 'me' }
+        context = { member: me.id }
         t = {
-          get: () => ({ scope: 'me' }),
-          getContext: () => ({ member: me.id }),
+          getContext: () => context,
         }
-        storage = new Storage(t)
+        storage = {
+          getSettings: async () => settings,
+          getTask: async () => ({}),
+          getLists: async () => ({}),
+        }
       })
 
       describe('when card is not assigned to me', () => {
 
         beforeAll(() => {
-          t.card = () => ({ members: [] })
+          t.card = () => ({ members : [] })
         })
 
         beforeEach(() => {
@@ -93,15 +97,17 @@ describe('Sync class', () => {
         })
 
         it('unmarks the card', async () => {
-          let handleScoped = jest.spyOn(sync, 'handleScoped')
+          expect(sync.handleScoped).toBeDefined()
+          sync.handleScoped = jest.fn()
           await sync.start()
-          expect(handleScoped).toBeCalled()
+          expect(sync.handleScoped).toBeCalled()
         })
 
         it('do not proceeds to the syncing', async () => {
-          let handle = jest.spyOn(sync, 'handle')
+          expect(sync.handle).toBeDefined()
+          sync.handle = jest.fn()
           await sync.start()
-          expect(handle).not.toBeCalled()
+          expect(sync.handle).not.toBeCalled()
         })
       })
 
@@ -126,18 +132,21 @@ describe('Sync class', () => {
     })
 
     describe('when syncing all the cards', () => {
-      let t, storage, sync, getResponse, lists, task
+      let t, storage, sync, card, lists, task
 
       beforeAll(() => {
-        getResponse = { scope: 'all' }
-        lists = getResponse
-        task = getResponse
+        settings = { scope: 'all' }
         card = { idList: 456 }
+        task = { id: 123, priority: 1 }
+        lists = { [card.idList]: 'doing' }
         t = {
-          get: () => getResponse,
           card: () => card,
         }
-        storage = new Storage(t)
+        storage = {
+          getSettings: () => settings,
+          getTask: () => task,
+          getLists: jest.fn(() => lists)
+        }
       })
 
       beforeEach(() => {
@@ -145,34 +154,32 @@ describe('Sync class', () => {
       })
 
       it('proceeds right to the syncing', async () => {
-        let handleScoped = jest.spyOn(sync, 'handleScoped')
-        let handle = jest.spyOn(sync, 'handle')
+        expect(sync.handleScoped).toBeDefined()
+        expect(sync.handle).toBeDefined()
+        sync.handleScoped = jest.fn()
+        sync.handle = jest.fn()
         await sync.start()
-        expect(handleScoped).not.toBeCalled()
-        expect(handle).toBeCalled()
+        expect(sync.handleScoped).not.toBeCalled()
+        expect(sync.handle).toBeCalled()
       })
 
       it('gets lists from the storage', async () => {
-        let getLists = jest.spyOn(sync.storage, 'getLists')
         await sync.start()
-        expect(getLists).toBeCalled()
+        expect(sync.storage.getLists).toBeCalledWith()
       })
 
       it('calls sync handler with proper args', async () => {
-        let handle = jest.spyOn(sync, 'handle')
+        expect(sync.handle).toBeDefined()
+        sync.handle = jest.fn()
         let listType = lists[card.idList]
         await sync.start()
-        expect(handle).toBeCalledWith(task, listType)
+        expect(sync.handle).toBeCalledWith(task, listType)
       })
     })
   })
 
   describe('.handleScoped()', () => {
-    let t = {}, storage, sync, taskData = {}
-
-    beforeAll(() => {
-      storage = new Storage(t)
-    })
+    let t = {}, storage = {}, sync, taskData = {}
 
     beforeEach(() => {
       sync = new Sync(t, storage)
@@ -191,12 +198,12 @@ describe('Sync class', () => {
 
         it('undo the to-do', () => {
           sync.handleScoped(taskData)
-          expect(sync.getTask().handleUndo).toBeCalled()
+          expect(sync.getTask().handleUndo).toBeCalledWith()
         })
 
         it('removes the to-do', async () => {
           await sync.handleScoped(taskData)
-          expect(sync.getTask().handleRemove).toBeCalled()
+          expect(sync.getTask().handleRemove).toBeCalledWith()
         })
       })
 
@@ -207,17 +214,14 @@ describe('Sync class', () => {
 
         it('removes the to-do', () => {
           sync.handleScoped(taskData)
-          expect(sync.getTask().handleRemove).toBeCalled()
+          expect(sync.getTask().handleRemove).toBeCalledWith()
         })
       })
     })
   })
 
   describe('.handle()', () => {
-    let t = {}, storage, sync, listType, taskData = {}
-    beforeAll(() => {
-      storage = new Storage(t)
-    })
+    let t = {}, storage = {}, sync, listType, taskData = {}
 
     beforeEach(() => {
       sync = new Sync(t, storage)

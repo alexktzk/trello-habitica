@@ -1,9 +1,17 @@
 const Storage = require('../public/js/storage')
 
+// empty state of trello storage 
+let emptyStorage = { 
+  board: { shared: {}, private: {} },
+  card: { shared: {}, private: {} },
+  member: { shared: {}, private: {} },
+  organization: { shared: {}, private: {} }
+}
+
 describe('Storage class', () => {
   describe('constructor', () => {
     it('assigns passed trello instance to local t variable', () => {
-      let t = { mockStorage: jest.fn() }
+      let t = {}
       let storage = new Storage(t)
       expect(storage.t).toBeDefined()
       expect(storage.t).toBe(t)
@@ -11,36 +19,26 @@ describe('Storage class', () => {
   })
 
   describe('.getAll()', () => {
-    let t, storage, storageSample
+    let t, storage, storageData
   
     beforeAll(() => {
-      // empty state of trello storage 
-      storageSample = { 
-        board: { shared: {}, private: {} },
-        card: { shared: {}, private: {} },
-        member: { shared: {}, private: {} },
-        organization: { shared: {}, private: {} }
+      storageData = emptyStorage
+      t = { 
+        getAll: jest.fn(async () => emptyStorage) 
       }
-      t = { getAll: jest.fn(() => storageSample) }
     })
   
     beforeEach(() => {
       storage = new Storage(t)
     })
   
-  
-    it('calls proper function', () => {
-      storage.getAll()
-      expect(t.getAll).toBeCalled()
+    it('calls function with proper args', async () => {
+      await storage.getAll()
+      expect(storage.t.getAll).toBeCalledWith()
     })
   
-    it('calls function with proper args', () => {
-      storage.getAll()
-      expect(t.getAll).toBeCalledWith()
-    })
-  
-    it('returns all storage', () => {
-      expect(storage.getAll()).toBe(storageSample)
+    it('returns all storage', async () => {
+      expect(await storage.getAll()).toBe(storageData)
     })
   })
 
@@ -48,7 +46,9 @@ describe('Storage class', () => {
     let t, storage
 
     beforeAll(() => {
-      t = { remove: jest.fn() }
+      t = { 
+        remove: jest.fn() 
+      }
     })
 
     beforeEach(() => {
@@ -57,29 +57,54 @@ describe('Storage class', () => {
 
     it('removes the lists', async () => {
       await storage.removeAll()
-      expect(t.remove).toBeCalledWith('board', 'private', 'lists')
+      expect(storage.t.remove).toBeCalledWith('board', 'private', 'lists')
     })
 
     it('removes the user', async () => {
       await storage.removeAll()
-      expect(t.remove).toBeCalledWith('board', 'private', 'user')
+      expect(storage.t.remove).toBeCalledWith('board', 'private', 'user')
     })
 
     it('removes the settings', async () => {
       await storage.removeAll()
-      expect(t.remove).toBeCalledWith('board', 'private', 'settings')
+      expect(storage.t.remove).toBeCalledWith('board', 'private', 'settings')
     })
   })
 
   describe('.setUser()', () => {
-    let t, storage, userSample
+    let t, storage, userData, params
   
     beforeAll(() => {
-      userSample = { loggedIn: false }
+      userData = { loggedIn: false }
       params = { name: 'Alex', loggedIn: true }
       t = {
         set: jest.fn(),
-        get: jest.fn(async () => userSample)
+        get: jest.fn(async () => userData)
+      }
+    })
+  
+    beforeEach(() => {
+      storage = new Storage(t)
+    })
+
+    it('gets current value with proper args', async () => {
+      await storage.setUser(params)
+      expect(storage.t.get).toBeCalledWith('board', 'private', 'user', {})
+    })
+
+    it('sets a new value with proper args', async () => {
+      await storage.setUser(params)
+      expect(storage.t.set).toBeCalledWith('board', 'private', 'user', Object.assign({}, userData, params))
+    })
+  })
+
+  describe('.getUser()', () => {
+    let t, storage, userData
+  
+    beforeAll(() => {
+      userData = { name: 'Alex', loggedIn: true }
+      t = { 
+        get: jest.fn(() => userData) 
       }
     })
   
@@ -87,51 +112,13 @@ describe('Storage class', () => {
       storage = new Storage(t)
     })
   
-    it('gets current value', () => {
-      storage.setUser(params)
-      expect(t.get).toBeCalled()
-    })
-
-    it('gets current value with proper args', () => {
-      storage.setUser(params)
-      expect(t.get).toBeCalledWith('board', 'private', 'user', {})
-    })
-
-    it('sets a new value', async () => {
-      await storage.setUser(params)
-      expect(t.set).toBeCalled()
-    })
-
-    it('sets a new value with proper args', async () => {
-      await storage.setUser(params)
-      expect(t.set).toBeCalledWith('board', 'private', 'user', Object.assign({}, userSample, params))
-    })
-  })
-
-  describe('.getUser()', () => {
-    let t, storage, userSample
-  
-    beforeAll(() => {
-      userSample = { name: 'Alex', loggedIn: true }
-      t = { get: jest.fn(() => userSample) }
+    it('calls function with proper args', async () => {
+      await storage.getUser()
+      expect(storage.t.get).toBeCalledWith('board', 'private', 'user', {})
     })
   
-    beforeEach(() => {
-      storage = new Storage(t)
-    })
-  
-    it('calls proper function', () => {
-      storage.getUser()
-      expect(t.get).toBeCalled()
-    })
-  
-    it('calls function with proper args', () => {
-      storage.getUser()
-      expect(t.get).toBeCalledWith('board', 'private', 'user', {})
-    })
-  
-    it('returns user data', () => {
-      expect(storage.getUser()).toBe(userSample)
+    it('returns user data', async () => {
+      expect(await storage.getUser()).toBe(userData)
     })
   })
   
@@ -139,33 +126,8 @@ describe('Storage class', () => {
     let t, storage
   
     beforeAll(() => {
-      t = { remove: jest.fn() }
-    })
-  
-    beforeEach(() => {
-      storage = new Storage(t)
-    })
-  
-    it('calls proper function', () => {
-      storage.removeUser()
-      expect(t.remove).toBeCalled()
-    })
-  
-    it('calls function with proper args', () => {
-      storage.removeUser()
-      expect(t.remove).toBeCalledWith('board', 'private', 'user')
-    })
-  })
-
-  describe('.setTask()', () => {
-    let t, storage
-  
-    beforeAll(() => {
-      taskSample = { id: 123, done: false }
-      params = { done: true }
-      t = {
-        set: jest.fn(),
-        get: jest.fn(async () => taskSample)
+      t = { 
+        remove: jest.fn(async () => ({}) ) 
       }
     })
   
@@ -173,57 +135,66 @@ describe('Storage class', () => {
       storage = new Storage(t)
     })
   
-    it('gets current value', () => {
-      storage.setTask(params)
-      expect(t.get).toBeCalled()
+    it('calls function with proper args', async () => {
+      await storage.removeUser()
+      expect(storage.t.remove).toBeCalledWith('board', 'private', 'user')
+    })
+  })
+
+  describe('.setTask()', () => {
+    let t, storage, taskData, params
+  
+    beforeAll(() => {
+      taskData = { id: 123, done: false }
+      params = { done: true }
+      t = {
+        set: jest.fn(),
+        get: jest.fn(async () => taskData)
+      }
+    })
+  
+    beforeEach(() => {
+      storage = new Storage(t)
     })
 
-    it('gets current value with proper args', () => {
-      storage.setTask(params)
-      expect(t.get).toBeCalledWith('card', 'private', 'task', {})
-    })
-
-    it('sets a new value', async () => {
+    it('gets current value with proper args', async () => {
       await storage.setTask(params)
-      expect(t.set).toBeCalled()
+      expect(storage.t.get).toBeCalledWith('card', 'private', 'task', {})
     })
 
     it('sets a new value with proper args', async () => {
       await storage.setTask(params)
-      expect(t.set).toBeCalledWith('card', 'private', 'task', Object.assign({}, taskSample, params))
+      expect(storage.t.set).toBeCalledWith('card', 'private', 'task', Object.assign({}, taskData, params))
     })
   })
 
   describe('.getTask()', () => {
-    let t, storage, taskSample
+    let t, storage, taskData
   
     beforeAll(() => {
-      taskSample = { 
+      taskData = { 
         id: 123,
         done: false, 
         priority: 1.5, 
         text: 'To-do text',
         notes: 'To-do description'
       }
-      t = { get: jest.fn(() => taskSample) }
+      t = { 
+        get: jest.fn(async () => taskData) 
+      }
     })
   
     beforeEach(() => {
       storage = new Storage(t)
     })
   
-    it('calls proper function', () => {
-      storage.getTask()
-      expect(t.get).toBeCalled()
+    it('calls function with proper args', async () => {
+      await storage.getTask()
+      expect(storage.t.get).toBeCalledWith('card', 'private', 'task', {})
     })
   
-    it('calls function with proper args', () => {
-      storage.getTask()
-      expect(t.get).toBeCalledWith('card', 'private', 'task', {})
-    })
-  
-    it('returns task data', () => {
-      expect(storage.getTask()).toBe(taskSample)
+    it('returns task data', async () => {
+      expect(await storage.getTask()).toBe(taskData)
     })
   })
 
@@ -231,33 +202,8 @@ describe('Storage class', () => {
     let t, storage
   
     beforeAll(() => {
-      t = { remove: jest.fn() }
-    })
-  
-    beforeEach(() => {
-      storage = new Storage(t)
-    })
-  
-    it('calls proper function', () => {
-      storage.removeTask()
-      expect(t.remove).toBeCalled()
-    })
-  
-    it('calls function with proper args', () => {
-      storage.removeTask()
-      expect(t.remove).toBeCalledWith('card', 'private', 'task')
-    })
-  })
-
-  describe('.setSettings()', () => {
-    let t, storage, userSample
-  
-    beforeAll(() => {
-      settingsSample = { scope: 'me', priority: '1' }
-      params = { scope: 'all' }
-      t = {
-        set: jest.fn(),
-        get: jest.fn(async () => settingsSample)
+      t = { 
+        remove: jest.fn(async () => ({}) ) 
       }
     })
   
@@ -265,102 +211,110 @@ describe('Storage class', () => {
       storage = new Storage(t)
     })
   
-    it('gets current value', () => {
-      storage.setSettings(params)
-      expect(t.get).toBeCalled()
+    it('calls function with proper args', async () => {
+      await storage.removeTask()
+      expect(storage.t.remove).toBeCalledWith('card', 'private', 'task')
+    })
+  })
+
+  describe('.setSettings()', () => {
+    let t, storage, settingsData, params
+  
+    beforeAll(() => {
+      settingsData = { scope: 'me', priority: '1' }
+      params = { scope: 'all' }
+      t = {
+        set: jest.fn(),
+        get: jest.fn(async () => settingsData)
+      }
+    })
+  
+    beforeEach(() => {
+      storage = new Storage(t)
     })
 
-    it('gets current value with proper args', () => {
-      storage.setSettings(params)
-      expect(t.get).toBeCalledWith('board', 'private', 'settings', {})
+    it('gets current value with proper args', async () => {
+      await storage.setSettings(params)
+      expect(storage.t.get).toBeCalledWith('board', 'private', 'settings', {})
     })
 
     it('sets a new value', async () => {
       await storage.setSettings(params)
-      expect(t.set).toBeCalled()
+      expect(storage.t.set).toBeCalled()
     })
 
     it('sets a new value with proper args', async () => {
       await storage.setSettings(params)
-      expect(t.set).toBeCalledWith('board', 'private', 'settings', Object.assign({}, settingsSample, params))
+      expect(storage.t.set).toBeCalledWith('board', 'private', 'settings', Object.assign({}, settingsData, params))
     })
   })
 
   describe('.getSettings()', () => {
-    let t, storage, settingsSample, defaultSettings
+    let t, storage, settingsData, defaultSettings
 
     beforeAll(() => {
-      settingsSample = { scope: 'me', priority: '1' }
-      defaultSettings = settingsSample
-      t = { get: jest.fn(() => settingsSample) }
+      settingsData = { scope: 'me', priority: '1' }
+      defaultSettings = settingsData
+      t = { 
+        get: jest.fn(async () => settingsData) 
+      }
     })
 
     beforeEach(() => {
       storage = new Storage(t)
     })
   
-    it('calls proper function', () => {
-      storage.getSettings()
-      expect(t.get).toBeCalled()
+    it('calls function with proper args', async () => {
+      await storage.getSettings()
+      expect(storage.t.get).toBeCalledWith('board', 'private', 'settings', defaultSettings)
     })
   
-    it('calls function with proper args', () => {
-      storage.getSettings()
-      expect(t.get).toBeCalledWith('board', 'private', 'settings', defaultSettings)
-    })
-  
-    it('returns settings data', () => {
-      expect(storage.getSettings()).toBe(settingsSample)
+    it('returns settings data', async () => {
+      expect(await storage.getSettings()).toBe(settingsData)
     })
   })
 
   describe('.setLists()', () => {
-    let t, storage
+    let t, storage, params
   
     beforeAll(() => {
       params = { 123: 'done' }
-      t = { set: jest.fn() }
+      t = { 
+        set: jest.fn(async () => ({}) ) 
+      }
     })
   
     beforeEach(() => {
       storage = new Storage(t)
-    })
-
-    it('sets a new value', () => {
-      storage.setLists(params)
-      expect(t.set).toBeCalled()
     })
 
     it('sets a new value with proper args', async () => {
       await storage.setLists(params)
-      expect(t.set).toBeCalledWith('board', 'private', 'lists', params)
+      expect(storage.t.set).toBeCalledWith('board', 'private', 'lists', params)
     })
   })
 
   describe('.getLists()', () => {
-    let t, storage, listsSample
+    let t, storage, listData
   
     beforeAll(() => {
-      listsSample = { 123: 'done', 456: 'doing' }
-      t = { get: jest.fn(() => listsSample) }
+      listData = { 123: 'done', 456: 'doing' }
+      t = { 
+        get: jest.fn(async () => listData) 
+      }
     })
   
     beforeEach(() => {
       storage = new Storage(t)
     })
   
-    it('calls proper function', () => {
-      storage.getLists()
-      expect(t.get).toBeCalled()
+    it('calls function with proper args', async () => {
+      await storage.getLists()
+      expect(storage.t.get).toBeCalledWith('board', 'private', 'lists', {})
     })
   
-    it('calls function with proper args', () => {
-      storage.getLists()
-      expect(t.get).toBeCalledWith('board', 'private', 'lists', {})
-    })
-  
-    it('returns lists data', () => {
-      expect(storage.getLists()).toBe(listsSample)
+    it('returns lists data', async () => {
+      expect(await storage.getLists()).toBe(listData)
     })
   })
 
