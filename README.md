@@ -20,3 +20,5 @@ Now it's time to fill in the form.
   * The easiest way is to use this url `https://alexktzk.github.io/trello-habitica` and as a bonus you will receive all upcoming updates without any changes from your side.
   * Or you can fork this repository, publish **gh-pages** branch to [GitHub Pages](https://pages.github.com) and use your own url.
 4. Now you can navigate to one of the boards of the team and activate your Power-Up! You will find it in the **Custom** section.
+
+![](https://github.com/alexktzk/trello-habitica/blob/master/docs/img/ui.png)
