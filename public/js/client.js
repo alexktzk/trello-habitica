@@ -109,7 +109,7 @@ t = TrelloPowerUp.initialize({
     let settingsPage = (t) => t.popup({
       title: 'Habitica settings',
       url: './settings.html',
-      height: 240,
+      height: 250,
     })
     
     let loginPage = (t) => t.popup({
