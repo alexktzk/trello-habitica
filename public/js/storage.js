@@ -46,9 +46,13 @@ class Storage {
   getSettings() {
     let defaultSettings = {
       scope: 'me',
-      priority: '1'
+      priority: '1',
+      showBadges: true,
+      prependIcon: false
     };
-    return this.t.get('board', 'private', 'settings', defaultSettings);
+    return this.t.get('board', 'private', 'settings', {}).then(settings => {
+      return Object.assign({}, defaultSettings, settings)
+    });
   }
 
   setSettings(obj) {
