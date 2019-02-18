@@ -7,13 +7,16 @@ class SettingsForm {
     this.storage = storage
   }
 
-  async initialize() {
-    await this.fetchSettings()
-    this.initializeElements()
-    this.initializeScope()
-    this.initializePriority()
-    this.listenToSubmit()
-    this.listenToLogout()
+  initialize() {
+    this.storage.getSettings().then(settings => {
+      this.initializeElements()
+
+      this.setScope(settings.scope)
+      this.setPriority(settings.priority)
+
+      this.listenToSubmit()
+      this.listenToLogout()
+    })
   }
 
   initializeElements() {
@@ -23,16 +26,12 @@ class SettingsForm {
     this.$logoutButton = document.getElementById('logout-btn')
   }
 
-  async fetchSettings() {
-    this.settings = await this.storage.getSettings()
+  setScope(val) {
+    this.$scope.value = val
   }
 
-  initializeScope() {
-    this.$scope.value = this.settings.scope
-  }
-
-  initializePriority() {
-    this.$priority.value = this.settings.priority
+  setPriority(val) {
+    this.$priority.value = val
   }
 
   listenToSubmit() {
@@ -45,7 +44,7 @@ class SettingsForm {
 
   handleSubmit() {
     this.$submitButton.disabled = true
-        
+
     return this.storage.setSettings({ 
       scope: this.$scope.value,
       priority: this.$priority.value

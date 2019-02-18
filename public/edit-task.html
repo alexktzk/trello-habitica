@@ -7,9 +7,9 @@
     <script src="js/habitica-api.js"></script>
     <script src="js/task.js"></script>
     <script src="js/list.js"></script>
+    <script src="js/task-form.js"></script>
   </head>
   <body>
-
     <b>Difficulty:</b>
     <select id="priority">
       <option value="0.5">Trivial</option>
@@ -21,29 +21,9 @@
     <button id="submit-btn" type="submit" class="mod-primary">Save</button>
   
     <script>
-      let t = TrelloPowerUp.iframe()
-      let storage = new Storage(t)
-      let $submitButton = document.getElementById('submit-btn')
-      let $priority = document.getElementById('priority')
-
-      storage.getTask().then(task => {
-        $priority.value = task.priority
-      })
-      
-      $submitButton.addEventListener('click', () => {
-        $submitButton.disabled = true
-        
-        storage.getTask().then(task => {
-          if (task.priority != $priority.value) {
-            return new Task(t).handleUpdate({
-                priority: $priority.value
-              })
-              .then(() => t.closePopup())
-          } else {
-            return t.closePopup()
-          }
-        })
-      })
+      let trello = TrelloPowerUp.iframe()
+      let form = new TaskForm(trello)
+      form.initialize()
     </script>
   </body>
 </html>
