@@ -1,4 +1,4 @@
-const HabiticaApi = require('../public/js/habitica_api')
+const HabiticaApi = require('../public/js/habitica-api')
 const Storage = require('../public/js/storage')
 const fetchMock = require('fetch-mock')
 

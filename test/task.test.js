@@ -1,8 +1,8 @@
 const Task = require('../public/js/task')
 const Storage = require('../public/js/storage')
-const HabiticaApi = require('../public/js/habitica_api')
+const HabiticaApi = require('../public/js/habitica-api')
 
-jest.mock('../public/js/habitica_api')
+jest.mock('../public/js/habitica-api')
 
 describe('Task class', () => {
   describe('constructor', () => {
