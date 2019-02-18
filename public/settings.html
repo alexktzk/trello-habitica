@@ -4,6 +4,7 @@
     <link rel="stylesheet" href="https://p.trellocdn.com/power-up.min.css">
     <script src="https://p.trellocdn.com/power-up.min.js"></script>
     <script src="js/storage.js"></script>
+    <script src="js/settings_form.js"></script>
   </head>
   <body>
     <h3>Preferences</h3>
@@ -26,38 +27,9 @@
     <button id="logout-btn" class="mod-danger">Log out</button>
   
     <script>
-      let t = TrelloPowerUp.iframe()
-      let storage = new Storage(t)
-      let $submitButton = document.getElementById('submit-btn')
-      let $logoutButton = document.getElementById('logout-btn')
-
-      let $scope = document.getElementById('scope')
-      let $priority = document.getElementById('priority')
-
-      storage.getSettings().then(settings => {
-        $scope.value = settings.scope
-        $priority.value = settings.priority
-      })
-
-      $submitButton.addEventListener('click', async () => {
-        $submitButton.disabled = true
-        
-        return storage.setSettings({ 
-          scope: $scope.value,
-          priority: $priority.value
-        }).then(() => t.closePopup())
-      })
-
-      $logoutButton.addEventListener('click', async () => {
-        $logoutButton.disabled = true
-
-        return Promise.all([
-          storage.removeUser()
-        ]).then(() => { 
-          return t.closePopup()
-        })
-      })
-
+      let trello = TrelloPowerUp.iframe()
+      let form = new SettingsForm(trello)
+      form.initialize()
     </script>
   </body>
 </html>
