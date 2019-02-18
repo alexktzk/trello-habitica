@@ -14,6 +14,7 @@ class SettingsForm {
       this.setScope(settings.scope)
       this.setPriority(settings.priority)
       this.setShowBadges(settings.showBadges)
+      this.setPrependIcon(settings.prependIcon)
 
       this.listenToSubmit()
       this.listenToLogout()
@@ -38,6 +39,10 @@ class SettingsForm {
   setShowBadges(val) {
     document.querySelector(`#show-badges-${val}`).checked = true
   }
+  
+  setPrependIcon(val) {
+    document.querySelector(`#prepend-icon-${val}`).checked = true
+  }
 
   listenToSubmit() {
     this.$submitButton.addEventListener('click', () => this.handleSubmit())
@@ -54,6 +59,7 @@ class SettingsForm {
       scope: this.$scope.value,
       priority: this.$priority.value,
       showBadges: JSON.parse(document.querySelector('input[name="show-badges"]:checked').value),
+      prependIcon: JSON.parse(document.querySelector('input[name="prepend-icon"]:checked').value),
     }).then(() => this.t.closePopup())
   }
 
