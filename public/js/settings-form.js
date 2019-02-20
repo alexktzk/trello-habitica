@@ -35,11 +35,11 @@ class SettingsForm {
   }
 
   listenToSubmit() {
-    this.$submitButton.addEventListener('click', this.handleSubmit.bind(this))
+    this.$submitButton.addEventListener('click', () => this.handleSubmit())
   }
 
   listenToLogout() {
-    this.$logoutButton.addEventListener('click', this.handleLogout.bind(this))
+    this.$logoutButton.addEventListener('click', () => this.handleLogout())
   }
 
   handleSubmit() {
@@ -57,3 +57,6 @@ class SettingsForm {
     return this.storage.removeUser().then(() => this.t.closePopup())
   }
 }
+
+// Fails in a browser, but required for tests.
+try { module.exports = SettingsForm } catch(_) {}
