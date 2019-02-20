@@ -14,11 +14,12 @@ class Task {
   async getTemplate(card) {
     let cardUrl = `https://trello.com/c/${card.shortLink}`
     let settings = await this.storage.getSettings()
+    let icon = settings.prependIcon ? `![](${TRELLO_ICON})&ensp;` : ''
 
     return {
       type: 'todo',
       priority: settings.priority,
-      text: `### ![](${TRELLO_ICON})&ensp; ${card.name}`,
+      text: `### ${icon}${card.name}`,
       notes: `[Open in Trello](${cardUrl})`
     }
   }
