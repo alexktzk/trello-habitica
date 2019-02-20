@@ -1,6 +1,7 @@
 const Task = require('../public/js/task')
 const Storage = require('../public/js/storage')
 const HabiticaApi = require('../public/js/habitica-api')
+const TRELLO_ICON = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYBAMAAAASWSDLAAAAA3NCSVQICAjb4U/gAAAACXBIWXMAAACmAAAApgHdff84AAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAACRQTFRFAGbMA3a9A3e8Ane9A3e9GYPCR5rMa63Ud7PXvNfm4Onu7O/xNljIFwAAAAN0Uk5TBWHLjO1H6wAAAGRJREFUGNNjYFQ2hgIjAQZhYzgwZFBGcIwYjM1X794ZbDp7965iYwZjq927dxebA4nFQI41kG62ABKbacMxAxKTYRyTjI72YBgH4jiiOZZATjKMY1rR0eYM4yABVG+jBAhyUAEAulltP7yEQqgAAAAASUVORK5CYII='
 
 jest.mock('../public/js/habitica-api')
 
@@ -28,7 +29,7 @@ describe('Task class', () => {
     })
   })
 
-  describe('.template()', () => {
+  describe('.getTemplate()', () => {
     let t = {}, storage, API = {}, task, card
 
     beforeAll(() => {
@@ -69,6 +70,28 @@ describe('Task class', () => {
     it('generates card url from shortLink', async () => {
       let template = await task.getTemplate(card)
       expect(template.notes).toMatch(card.shortLink)
+    })
+
+    describe('when chosen to prepend the icon to the text', () => {
+      beforeAll(() => {
+        settings.prependIcon = true
+      })
+
+      it('prepends the icon', async () => {
+        let template = await task.getTemplate(card)
+        expect(template.text).toMatch(TRELLO_ICON)
+      })
+    })
+
+    describe('when chosen to not prepend the icon to the text', () => {
+      beforeAll(() => {
+        settings.prependIcon = false
+      })
+
+      it('not prepends the icon', async () => {
+        let template = await task.getTemplate(card)
+        expect(template.text).not.toMatch(TRELLO_ICON)
+      })
     })
   })
 
