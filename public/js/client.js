@@ -109,7 +109,7 @@ t = TrelloPowerUp.initialize({
     let settingsPage = (t) => t.popup({
       title: 'Habitica settings',
       url: './settings.html',
-      height: 250,
+      height: 322,
     })
     
     let loginPage = (t) => t.popup({
@@ -129,7 +129,10 @@ t = TrelloPowerUp.initialize({
     let currentUser = await storage.getUser()
     if (!currentUser.loggedIn) return []
 
-    return syncWithHabitica(t, storage).then(async () => {
+    return syncWithHabitica(t).then(async () => {
+      let settings = await storage.getSettings()
+      if (!settings.showBadges) return []
+
       let taskData = await storage.getTask()
       return [
         { icon: taskData.id ? ICONS.TASK_DOING : null }, 
