@@ -1,4 +1,4 @@
-# 1.1.1 (2019-02-21)
+## 1.1.1 (2019-02-21)
 
 ### Added
 
@@ -11,7 +11,7 @@
 * Ability to change todo difficulty to trivial ([afb4e47](https://github.com/trello/glitch-trello-power-up/commit/afb4e47))
 
 
-# 1.0.0 (2019-02-17)
+## 1.0.0 (2019-02-17)
 
 ### Added
 

@@ -37,19 +37,23 @@ class SettingsForm {
   }
 
   setShowBadges(val) {
-    document.querySelector(`#show-badges-${val}`).checked = true
+    let el = document.querySelector(`#show-badges-${val}`)
+    if (el) el.checked = true
   }
 
   getShowBadges() {
-    return JSON.parse(document.querySelector('input[name="show-badges"]:checked').value)
+    let el = document.querySelector('input[name="show-badges"]:checked')
+    return el ? JSON.parse(el.value) : true
   }
   
   setPrependIcon(val) {
-    document.querySelector(`#prepend-icon-${val}`).checked = true
+    let el = document.querySelector(`#prepend-icon-${val}`)
+    if (el) el.checked = true
   }
 
   getPrependIcon() {
-    return JSON.parse(document.querySelector('input[name="prepend-icon"]:checked').value)
+    let el = document.querySelector('input[name="prepend-icon"]:checked')
+    return el ? JSON.parse(el.value) : false
   }
 
   listenToSubmit() {

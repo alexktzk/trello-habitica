@@ -110,7 +110,7 @@ t = TrelloPowerUp.initialize({
     let settingsPage = (t) => t.popup({
       title: 'Habitica settings',
       url: './settings.html',
-      height: 322,
+      height: 394,
     })
     
     let loginPage = (t) => t.popup({
@@ -130,8 +130,8 @@ t = TrelloPowerUp.initialize({
         text: ' ',
         callback: (t) => t.popup({
           title: "What's new?",
-          url: 'https://alexktzk.github.io/trello-habitica/changelog/',
-          height: 340
+          url: './changelog/',
+          height: 525
         })
       }
   ]
