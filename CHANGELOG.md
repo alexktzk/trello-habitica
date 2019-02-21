@@ -1,4 +1,17 @@
-## 1.0.0 (2019-02-17)
+# 1.1.1 (2019-02-21)
+
+### Added
+
+* Ability to hide/show card badges ([b94c7d5](https://github.com/trello/glitch-trello-power-up/commit/b94c7d5))
+* Ability to hide/show todos icon ([ea70a12](https://github.com/trello/glitch-trello-power-up/commit/ea70a12))
+* Popup with latest updates ([caeb409](https://github.com/trello/glitch-trello-power-up/commit/caeb409))
+
+### Fixed
+
+* Ability to change todo difficulty to trivial ([afb4e47](https://github.com/trello/glitch-trello-power-up/commit/afb4e47))
+
+
+# 1.0.0 (2019-02-17)
 
 ### Added
 
