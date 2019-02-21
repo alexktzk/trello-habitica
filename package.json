@@ -1,13 +1,13 @@
 {
-  "name": "power-up",
-  "version": "0.0.1",
-  "description": "A sample Trello Power-Up that can be used as a starting point for your own awesome Power-Up.",
+  "name": "trello-habitica",
+  "repository": "https://github.com/alexktzk/trello-habitica",
+  "description": "Trello Power-Up for Habitica.",
+  "version": "1.1.1",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "test": "jest"
   },
-  "repository": "https://github.com/trello/glitch-trello-power-up",
   "dependencies": {
     "compression": "^1.7.1",
     "cors": "^2.8.4",
@@ -18,13 +18,15 @@
     "node": "9.x"
   },
   "keywords": [
-    "power-ups",
+    "habitica",
+    "habitrpg",
     "trello",
-    "glitch"
+    "power-up",
+    "integration"
   ],
   "license": "MIT",
   "devDependencies": {
     "fetch-mock": "^7.3.0",
-    "jest": "^23.6.0"
+    "jest": "^24.1.0"
   }
 }
