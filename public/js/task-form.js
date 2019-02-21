@@ -27,16 +27,24 @@ class TaskForm {
   }
 
   listenToSubmit() {
-    this.$submitButton.addEventListener('click', this.handleSubmit.bind(this))
+    this.$submitButton.addEventListener('click', () => this.handleSubmit())
+  }
+  
+  updatePriority(val) {
+    return new Task(this.t).handleUpdate({ priority: val })
   }
 
   handleSubmit() {
+    console.log(this)
     this.$submitButton.disabled = true
 
     this.storage.getTask().then(task => {
       if (task.priority == this.$priority.value) return
 
-      return new Task(this.t).handleUpdate({ priority: this.$priority.value })
+      return this.updatePriority(this.$priority.value)
     }).then(() => this.t.closePopup())
   }
 }
+
+// Fails in a browser, but required for tests.
+try { module.exports = TaskForm } catch(_) {}
