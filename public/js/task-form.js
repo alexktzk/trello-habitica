@@ -35,7 +35,6 @@ class TaskForm {
   }
 
   handleSubmit() {
-    console.log(this)
     this.$submitButton.disabled = true
 
     this.storage.getTask().then(task => {

@@ -39,9 +39,17 @@ class SettingsForm {
   setShowBadges(val) {
     document.querySelector(`#show-badges-${val}`).checked = true
   }
+
+  getShowBadges() {
+    return JSON.parse(document.querySelector('input[name="show-badges"]:checked').value)
+  }
   
   setPrependIcon(val) {
     document.querySelector(`#prepend-icon-${val}`).checked = true
+  }
+
+  getPrependIcon() {
+    return JSON.parse(document.querySelector('input[name="prepend-icon"]:checked').value)
   }
 
   listenToSubmit() {
@@ -58,8 +66,8 @@ class SettingsForm {
     return this.storage.setSettings({ 
       scope: this.$scope.value,
       priority: this.$priority.value,
-      showBadges: JSON.parse(document.querySelector('input[name="show-badges"]:checked').value),
-      prependIcon: JSON.parse(document.querySelector('input[name="prepend-icon"]:checked').value),
+      showBadges: this.getShowBadges(),
+      prependIcon: this.getPrependIcon(),
     }).then(() => this.t.closePopup())
   }
 

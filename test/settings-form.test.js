@@ -8,7 +8,9 @@ describe('SettingsForm class', () => {
     beforeAll(() => {
       settings = {
         scope: 'me',
-        priority: '1'
+        priority: '1',
+        showBadges: true,
+        prependIcon: false
       }
       storage.getSettings = jest.fn(async () => settings )
     })
@@ -18,6 +20,8 @@ describe('SettingsForm class', () => {
       form.initializeElements = jest.fn()
       form.setScope = jest.fn()
       form.setPriority = jest.fn()
+      form.setShowBadges = jest.fn()
+      form.setPrependIcon = jest.fn()
       form.listenToSubmit = jest.fn()
       form.listenToLogout = jest.fn()
     })
@@ -40,6 +44,16 @@ describe('SettingsForm class', () => {
     it('sets priority value from the storage', async () => {
       await form.initialize()
       expect(form.setPriority).toBeCalledWith(settings.priority)
+    })
+
+    it('sets showBadges value from the storage', async () => {
+      await form.initialize()
+      expect(form.setShowBadges).toBeCalledWith(settings.showBadges)
+    })
+
+    it('sets prependIcon value from the storage', async () => {
+      await form.initialize()
+      expect(form.setPrependIcon).toBeCalledWith(settings.prependIcon)
     })
 
     it('listens to submit', async () => {
@@ -130,6 +144,8 @@ describe('SettingsForm class', () => {
       form.$submitButton = {}
       form.$scope = { value: 'me' }
       form.$priority = { value: '1' }
+      form.getShowBadges = jest.fn()
+      form.getPrependIcon = jest.fn()
     })
 
     it('disables submit button', () => {

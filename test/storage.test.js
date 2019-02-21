@@ -253,7 +253,7 @@ describe('Storage class', () => {
     let t, storage, settingsData, defaultSettings
 
     beforeAll(() => {
-      settingsData = { scope: 'me', priority: '1' }
+      settingsData = { scope: 'me', priority: '1', showBadges: true, prependIcon: false }
       defaultSettings = settingsData
       t = { 
         get: jest.fn(async () => settingsData) 
@@ -266,11 +266,11 @@ describe('Storage class', () => {
   
     it('calls function with proper args', async () => {
       await storage.getSettings()
-      expect(storage.t.get).toBeCalledWith('board', 'private', 'settings', defaultSettings)
+      expect(storage.t.get).toBeCalledWith('board', 'private', 'settings', {})
     })
   
     it('returns settings data', async () => {
-      expect(await storage.getSettings()).toBe(settingsData)
+      expect(await storage.getSettings()).toEqual(settingsData)
     })
   })
 
