@@ -27,6 +27,8 @@
   "license": "MIT",
   "devDependencies": {
     "fetch-mock": "^7.3.0",
-    "jest": "^24.1.0"
+    "jest": "^24.1.0",
+    "webpack": "^4.29.6",
+    "webpack-cli": "^3.2.3"
   }
 }
