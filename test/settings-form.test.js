@@ -1,4 +1,4 @@
-const SettingsForm = require('../public/js/settings-form')
+const SettingsForm = require('../src/js/settings-form')
 
 describe('SettingsForm class', () => {
 

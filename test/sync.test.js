@@ -1,5 +1,5 @@
-const Sync = require('../public/js/sync')
-const Storage = require('../public/js/storage')
+const Sync = require('../src/js/sync')
+const Storage = require('../src/js/storage')
 
 let taskMock = { 
   handleAdd: jest.fn(async () => {}),

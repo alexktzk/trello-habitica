@@ -1,4 +1,4 @@
-const Storage = require('../public/js/storage')
+const Storage = require('../src/js/storage')
 
 // empty state of trello storage 
 let emptyStorage = { 

@@ -16,11 +16,11 @@ app.use(cors({ origin: 'https://trello.com' }));
 
 // https://github.com/mingchen/node-nocache
 app.use('/manifest.json', nocache, (request, response) => {
-  response.sendFile(__dirname + '/public/manifest.json');
+  response.sendFile(__dirname + '/src/manifest.json');
 });
 
 // http://expressjs.com/en/starter/static-files.html
-app.use(express.static('public'));
+app.use(express.static('src'));
 
 // listen for requests :)
 let listener = app.listen(55555, () => {

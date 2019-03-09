@@ -1,5 +1,5 @@
-const Storage = require('../public/js/storage')
-const List = require('../public/js/list')
+const Storage = require('../src/js/storage')
+const List = require('../src/js/list')
 
 LIST_TYPES = {
   DONE: 'done',

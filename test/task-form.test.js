@@ -1,4 +1,4 @@
-const TaskForm = require('../public/js/task-form')
+const TaskForm = require('../src/js/task-form')
 
 describe('TaskForm class', () => {
 
