@@ -1,4 +1,6 @@
-class SettingsForm {
+import Storage from './storage'
+
+export default class SettingsForm {
   constructor(
     trello,
     storage = new Storage(trello)
@@ -81,6 +83,3 @@ class SettingsForm {
     return this.storage.removeUser().then(() => this.t.closePopup())
   }
 }
-
-// Fails in a browser, but required for tests.
-try { module.exports = SettingsForm } catch(_) {}

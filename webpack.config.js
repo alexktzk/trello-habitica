@@ -1,15 +1,16 @@
 const path = require('path')
-const webpack = require('webpack')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = (env) => {
   return {
     entry : {
-      app: './src/js/index.js',
-      settings: './src/js/settings-form.js'
+      index: './src/js/index.js',
+      settings: './src/js/settings.js',
+      'edit-task': './src/js/edit-task.js',
     },
     output: {
       path: path.resolve(__dirname, 'dist'),
-      filename: '[name].bundle.js',
+      filename: '[name].bundle.[contenthash].js',
     },
     devServer: {
       contentBase: path.join(__dirname, 'dist'),
@@ -32,6 +33,14 @@ module.exports = (env) => {
           }
         }
       ]
-    }
+    },
+    plugins: ['index', 'settings', 'edit-task'].map(chunk => {
+      return new HtmlWebpackPlugin({
+        filename: `${chunk}.html`,
+        template: `./src/${chunk}.html`,
+        chunks: [chunk],
+        cache: true
+      })
+    })
   }
 }

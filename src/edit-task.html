@@ -3,11 +3,6 @@
   <head>
     <link rel="stylesheet" href="https://p.trellocdn.com/power-up.min.css">
     <script src="https://p.trellocdn.com/power-up.min.js"></script>
-    <script src="js/storage.js"></script>
-    <script src="js/habitica-api.js"></script>
-    <script src="js/task.js"></script>
-    <script src="js/list.js"></script>
-    <script src="js/task-form.js"></script>
   </head>
   <body>
     <b>Difficulty:</b>
@@ -19,11 +14,5 @@
     </select>
 
     <button id="submit-btn" type="submit" class="mod-primary">Save</button>
-  
-    <script>
-      let trello = TrelloPowerUp.iframe()
-      let form = new TaskForm(trello)
-      form.initialize()
-    </script>
   </body>
 </html>
