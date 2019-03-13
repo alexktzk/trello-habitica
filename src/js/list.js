@@ -1,9 +1,7 @@
-LIST_TYPES = {
-  DONE: 'done',
-  DOING: 'doing'
-}
+import { LIST_TYPES } from './constants'
+import Storage from './storage'
 
-class List {
+export default class List {
   constructor(
     trello,
     storage = new Storage(trello)
@@ -50,6 +48,3 @@ class List {
     })
   }
 }
-
-// Fails in a browser, but required for tests.
-try { module.exports = List } catch(_) {}
