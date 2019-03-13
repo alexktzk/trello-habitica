@@ -3,10 +3,14 @@
   "repository": "https://github.com/alexktzk/trello-habitica",
   "description": "Trello Power-Up for Habitica.",
   "version": "1.1.1",
-  "main": "server.js",
+  "main": "webpack.config.js",
   "scripts": {
-    "start": "node server.js",
-    "test": "jest"
+    "clean-dist": "rimraf dist",
+    "copy-files": "cpy src/*.html dist && cpy src/changelog dist/changelog && cpy src/js dist/js",
+    "clean-and-copy": "npm run clean-dist && npm run copy-files",
+    "dev:start": "node_modules/.bin/webpack-dev-server",
+    "test": "jest",
+    "build": "webpack --config webpack.config.js"
   },
   "dependencies": {
     "compression": "^1.7.1",
@@ -26,9 +30,17 @@
   ],
   "license": "MIT",
   "devDependencies": {
+    "@babel/core": "^7.3.4",
+    "@babel/plugin-transform-runtime": "^7.3.4",
+    "@babel/preset-env": "^7.3.4",
+    "@babel/runtime": "^7.3.4",
+    "babel-loader": "^8.0.5",
+    "cpy-cli": "^2.0.0",
     "fetch-mock": "^7.3.0",
     "jest": "^24.1.0",
+    "rimraf": "^2.6.3",
     "webpack": "^4.29.6",
-    "webpack-cli": "^3.2.3"
+    "webpack-cli": "^3.2.3",
+    "webpack-dev-server": "^3.2.1"
   }
 }

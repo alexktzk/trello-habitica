@@ -14,16 +14,11 @@ app.use(compression());
 // your manifest must have appropriate CORS headers, you could also use '*'
 app.use(cors({ origin: 'https://trello.com' }));
 
-// https://github.com/mingchen/node-nocache
-app.use('/manifest.json', nocache, (request, response) => {
-  response.sendFile(__dirname + '/src/manifest.json');
-});
-
 // http://expressjs.com/en/starter/static-files.html
-app.use(express.static('src'));
+app.use(express.static('dist'));
 
 // listen for requests :)
-let listener = app.listen(55555, () => {
+let listener = app.listen(8080, () => {
   console.info(`Node Version: ${process.version}`);
   console.log('Trello Power-Up Server listening on port ' + listener.address().port);
 });
