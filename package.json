@@ -3,15 +3,15 @@
   "repository": "https://github.com/alexktzk/trello-habitica",
   "description": "Trello Power-Up for Habitica.",
   "version": "1.1.1",
-  "main": "webpack.config.js",
+  "main": "webpack.config.dev.js",
   "scripts": {
     "test": "jest",
     "clean-dist": "rimraf dist",
     "copy-files": "cpy src/*.html dist && cpy src/changelog dist/changelog",
     "watch": "webpack --watch",
-    "build": "webpack --config webpack.config.js",
+    "build": "webpack --config webpack.config.prod.js",
     "prestart": "npm run clean-dist && npm run copy-files",
-    "start": "node server.js",
+    "start": "webpack --config webpack.config.dev.js && webpack-dev-server --config webpack.config.dev.js",
     "publish": "git push origin `git subtree split --prefix public master`:gh-pages --force"
   },
   "dependencies": {

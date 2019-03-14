@@ -3,6 +3,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = (env) => {
   return {
+    mode: 'production',
     entry : {
       index: './src/js/index.js',
       settings: './src/js/settings.js',
@@ -11,11 +12,6 @@ module.exports = (env) => {
     output: {
       path: path.resolve(__dirname, 'dist'),
       filename: '[name].bundle.[contenthash].js',
-    },
-    devServer: {
-      contentBase: path.join(__dirname, 'dist'),
-      compress: true,
-      port: 8080
     },
     module: {
       rules: [
