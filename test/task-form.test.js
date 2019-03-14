@@ -1,4 +1,4 @@
-const TaskForm = require('../src/js/task-form')
+import TaskForm from '../src/js/task-form'
 
 describe('TaskForm class', () => {
 
@@ -102,7 +102,7 @@ describe('TaskForm class', () => {
 
     describe('when task was changed', () => {
       beforeAll(() => {
-        task.priority.value = '1'
+        task.priority = '1'
       })
 
       beforeEach(() => {
@@ -117,7 +117,7 @@ describe('TaskForm class', () => {
 
     describe('when task was not changed', () => {
       beforeAll(() => {
-        task.priority.value = '1'
+        task.priority = '1'
       })
 
       beforeEach(() => {

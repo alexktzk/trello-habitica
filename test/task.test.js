@@ -1,7 +1,7 @@
-const Task = require('../src/js/task')
-const Storage = require('../src/js/storage')
-const HabiticaApi = require('../src/js/habitica-api')
-const TRELLO_ICON = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYBAMAAAASWSDLAAAAA3NCSVQICAjb4U/gAAAACXBIWXMAAACmAAAApgHdff84AAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAACRQTFRFAGbMA3a9A3e8Ane9A3e9GYPCR5rMa63Ud7PXvNfm4Onu7O/xNljIFwAAAAN0Uk5TBWHLjO1H6wAAAGRJREFUGNNjYFQ2hgIjAQZhYzgwZFBGcIwYjM1X794ZbDp7965iYwZjq927dxebA4nFQI41kG62ABKbacMxAxKTYRyTjI72YBgH4jiiOZZATjKMY1rR0eYM4yABVG+jBAhyUAEAulltP7yEQqgAAAAASUVORK5CYII='
+import Storage from '../src/js/storage'
+import HabiticaApi from '../src/js/habitica-api'
+import Task from '../src/js/task'
+import { TRELLO_ICON } from '../src/js/constants'
 
 jest.mock('../src/js/habitica-api')
 
@@ -30,7 +30,7 @@ describe('Task class', () => {
   })
 
   describe('.getTemplate()', () => {
-    let t = {}, storage, API = {}, task, card
+    let t = {}, storage, API = {}, task, card, settings
 
     beforeAll(() => {
       settings = { priority: 1 }
@@ -96,7 +96,7 @@ describe('Task class', () => {
   })
 
   describe('.handleAdd()', () => {
-    let t, storage, API, task, cardData, res
+    let t, storage, API, task, cardData, res, template
 
     beforeAll(() => {
       cardData = {
@@ -153,7 +153,7 @@ describe('Task class', () => {
   })
 
   describe('.handleRemove()', () => {
-    let t = {}, storage, API, task
+    let t = {}, storage, API, task, taskData
 
     beforeAll(() => {
       taskData = { id: 123 }
@@ -187,7 +187,7 @@ describe('Task class', () => {
   })
 
   describe('.handleDo()', () => {
-    let t = {}, storage, API, task
+    let t = {}, storage, API, task, taskData
 
     beforeAll(() => {
       taskData = { id: 123 }
@@ -221,7 +221,7 @@ describe('Task class', () => {
   })
 
   describe('.handleUndo()', () => {
-    let t, storage, API, task
+    let t, storage, API, task, taskData
 
     beforeAll(() => {
       taskData = { id: 123 }
@@ -255,7 +255,7 @@ describe('Task class', () => {
   })
 
   describe('.handleUpdate()', () => {
-    let t = {}, storage, API, task, res
+    let t = {}, storage, API, task, res, params, taskData
 
     beforeAll(() => {
       taskData = { id: 123 }
