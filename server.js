@@ -4,7 +4,6 @@
 let compression = require('compression');
 let cors = require('cors');
 let express = require('express');
-let nocache = require('node-nocache');
 
 let app = express();
 
@@ -22,4 +21,3 @@ let listener = app.listen(8080, () => {
   console.info(`Node Version: ${process.version}`);
   console.log('Trello Power-Up Server listening on port ' + listener.address().port);
 });
-

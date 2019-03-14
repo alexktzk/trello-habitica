@@ -1,5 +1,5 @@
-import { LIST_TYPES } from './constants'
 import Storage from './storage'
+import { LIST_TYPES } from './constants'
 
 export default class List {
   constructor(
