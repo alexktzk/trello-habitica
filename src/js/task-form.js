@@ -1,4 +1,7 @@
-class TaskForm {
+import Storage from './storage'
+import Task from './task'
+
+export default class TaskForm {
   constructor(
     trello,
     storage = new Storage(trello)
@@ -44,6 +47,3 @@ class TaskForm {
     }).then(() => this.t.closePopup())
   }
 }
-
-// Fails in a browser, but required for tests.
-try { module.exports = TaskForm } catch(_) {}
