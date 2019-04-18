@@ -12,7 +12,8 @@
     "build": "webpack --config webpack.config.prod.js",
     "prestart": "npm run clean-dist && npm run copy-files",
     "start": "webpack --config webpack.config.dev.js && webpack-dev-server --config webpack.config.dev.js",
-    "publish": "git push origin `git subtree split --prefix dist master`:gh-pages --force"
+    "publish": "git push origin `git subtree split --prefix dist develop`:gh-pages --force",
+    "deploy": "npm run build && npm run publish && npm run clean-dist"
   },
   "dependencies": {
     "compression": "^1.7.1",
