@@ -21,5 +21,6 @@ Now it's time to fill in the form.
   `https://alexktzk.github.io/trello-habitica`  
   * Or you can fork this repository, publish **gh-pages** branch to [GitHub Pages](https://pages.github.com) and use your own url.
 4. Now you can navigate to one of the boards of the team and activate your Power-Up! You will find it in the **Custom** section.
+5. Finally, click the list menu (three dots) and select either "Mark list as Doing" or "Mark list as Done."
 
 ![](https://github.com/alexktzk/trello-habitica/blob/master/docs/img/ui.png)
