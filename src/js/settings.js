@@ -1,5 +1,5 @@
-import SettingsForm from './settings-form'
+import SettingsForm from './settings-form';
 
-let trello = TrelloPowerUp.iframe()
-let form = new SettingsForm(trello)
-form.initialize()
+const trello = TrelloPowerUp.iframe();
+const form = new SettingsForm(trello);
+form.initialize();

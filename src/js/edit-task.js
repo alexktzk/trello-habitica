@@ -1,5 +1,5 @@
-import TaskForm from './task-form'
+import TaskForm from './task-form';
 
-let trello = TrelloPowerUp.iframe()
-let form = new TaskForm(trello)
-form.initialize()
+const trello = TrelloPowerUp.iframe();
+const form = new TaskForm(trello);
+form.initialize();
