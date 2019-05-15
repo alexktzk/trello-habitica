@@ -12,7 +12,7 @@
     "build": "webpack --config webpack.config.prod.js",
     "prestart": "npm run clean-dist && npm run copy-files",
     "start": "webpack --config webpack.config.dev.js && webpack-dev-server --config webpack.config.dev.js",
-    "publish": "git push origin `git subtree split --prefix dist develop`:gh-pages --force",
+    "publish": "push-dir --dir=dist --branch=gh-pages --cleanup",
     "deploy": "npm run build && npm run publish && npm run clean-dist"
   },
   "dependencies": {
@@ -43,6 +43,7 @@
     "fetch-mock": "^7.3.0",
     "html-webpack-plugin": "^3.2.0",
     "jest": "^24.1.0",
+    "push-dir": "^0.4.1",
     "rimraf": "^2.6.3",
     "webpack": "^4.29.6",
     "webpack-cli": "^3.2.3",
