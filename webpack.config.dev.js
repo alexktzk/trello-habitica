@@ -1,17 +1,18 @@
-const path = require('path')
-const HtmlWebpackPlugin = require('html-webpack-plugin')
+const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
-module.exports = (env) => {
+module.exports = env => {
   return {
     mode: 'development',
-    entry : {
+    entry: {
       index: './src/js/index.js',
       settings: './src/js/settings.js',
-      'edit-task': './src/js/edit-task.js',
+      login: './src/js/login.js',
+      'edit-task': './src/js/edit-task.js'
     },
     output: {
       path: path.resolve(__dirname, 'dist'),
-      filename: '[name].bundle.js',
+      filename: '[name].bundle.js'
     },
     devServer: {
       contentBase: false,
@@ -31,12 +32,12 @@ module.exports = (env) => {
         }
       ]
     },
-    plugins: ['index', 'settings', 'edit-task'].map(chunk => {
+    plugins: ['index', 'settings', 'edit-task', 'login'].map(chunk => {
       return new HtmlWebpackPlugin({
         filename: `${chunk}.html`,
         template: `./src/${chunk}.html`,
         chunks: [chunk]
-      })
+      });
     })
-  }
-}
+  };
+};
