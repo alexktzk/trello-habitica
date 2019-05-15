@@ -1,51 +1,20 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="https://p.trellocdn.com/power-up.min.css">
+    <link rel="stylesheet" href="https://p.trellocdn.com/power-up.min.css" />
     <script src="https://p.trellocdn.com/power-up.min.js"></script>
-    <script src="js/storage.js"></script>
-    <script src="js/habitica-api.js"></script>
   </head>
   <body>
     <h3>API</h3>
 
-    User ID and API Token of your Habitica account can be found in the settings under API section.<br><br>
-    
-    <input id="user-id" type="text" placeholder="User ID">
-    <input id="api-token" type="password" placeholder="API Token">
+    User ID and API Token of your Habitica account can be found in the settings
+    under API section.<br /><br />
 
-    User ID and API Token are stored in your browser and not shared with Trello or anyone else. <br><br>
+    <input id="user-id" type="text" placeholder="User ID" />
+    <input id="api-token" type="password" placeholder="API Token" />
+
+    User ID and API Token are stored in your browser and not shared with Trello
+    or anyone else. <br /><br />
     <button id="submit-btn" type="submit" class="mod-primary">Log in</button>
-
-  
-    <script>
-      let t = TrelloPowerUp.iframe()
-      let storage = new Storage(t)
-      let $submitButton = document.getElementById('submit-btn')
-
-      let $userId   = document.getElementById('user-id')
-      let $apiToken = document.getElementById('api-token')
-
-      let userId, apiToken
-      t.loadSecret('userId').then(val => userId = $userId.value = val)
-      t.loadSecret('apiToken').then(val => apiToken = $apiToken.value = val)
-
-      $submitButton.addEventListener('click', async () => {
-        $submitButton.disabled = true
-
-        await Promise.all([
-          t.storeSecret('userId', $userId.value),
-          t.storeSecret('apiToken', $apiToken.value)
-        ])
-
-        let api = new HabiticaApi(t)
-        return await api.getUserProfile().then(res => {
-          return storage.setUser({
-            name: res.data.profile.name,
-            loggedIn: true
-          }).then(() => t.closePopup())
-        })
-      })
-    </script>
   </body>
 </html>
