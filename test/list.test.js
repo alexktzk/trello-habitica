@@ -1,10 +1,6 @@
-const Storage = require('../public/js/storage')
-const List = require('../public/js/list')
-
-LIST_TYPES = {
-  DONE: 'done',
-  DOING: 'doing'
-}
+import Storage from '../src/js/storage'
+import List from '../src/js/list'
+import { LIST_TYPES } from '../src/js/constants'
 
 const minimalT = {
   list: jest.fn(() => ({ id: 123, name: 'List name' }) ),
@@ -62,7 +58,7 @@ describe('List class', () => {
   })
 
   describe('.mark()', () => {
-    let t, storage, list, lists = {}, listType
+    let t, storage, list, lists = {}, listData, listType
 
     beforeAll(() => {
       listData = { id: 456 }

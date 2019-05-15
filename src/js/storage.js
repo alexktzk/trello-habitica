@@ -1,4 +1,4 @@
-class Storage {
+export default class Storage {
   constructor(trello) {
     this.t = trello
   }
@@ -69,6 +69,3 @@ class Storage {
     return this.t.set('board', 'private', 'lists', obj);
   }
 }
-
-// Fails in a browser, but required for tests.
-try { module.exports = Storage } catch(_) {}

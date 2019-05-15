@@ -1,6 +1,6 @@
-const HabiticaApi = require('../public/js/habitica-api')
-const Storage = require('../public/js/storage')
-const fetchMock = require('fetch-mock')
+import Storage from '../src/js/storage'
+import HabiticaApi from '../src/js/habitica-api'
+import fetchMock from 'fetch-mock'
 
 describe('HabiticaApi class', () => {
 
@@ -23,7 +23,7 @@ describe('HabiticaApi class', () => {
   })
 
   describe('.request()', () => {
-    let t = {} , storage = {}, API, params, url, response
+    let t = {} , storage = {}, API, params, url, response, emptyMock
   
     beforeAll(() => {
       params = { foo: 'bar' }

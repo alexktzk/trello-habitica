@@ -1,4 +1,4 @@
-const SettingsForm = require('../public/js/settings-form')
+import SettingsForm from '../src/js/settings-form'
 
 describe('SettingsForm class', () => {
 

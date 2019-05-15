@@ -3,8 +3,6 @@
   <head>
     <link rel="stylesheet" href="https://p.trellocdn.com/power-up.min.css">
     <script src="https://p.trellocdn.com/power-up.min.js"></script>
-    <script src="js/storage.js"></script>
-    <script src="js/settings-form.js"></script>
   </head>
   <body>
     <h3>Preferences</h3>
@@ -33,11 +31,5 @@
 
     <button id="submit-btn" class="mod-primary">Save</button><br>
     <button id="logout-btn" class="mod-danger">Log out</button>
-  
-    <script>
-      let trello = TrelloPowerUp.iframe()
-      let form = new SettingsForm(trello)
-      form.initialize()
-    </script>
   </body>
 </html>

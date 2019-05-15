@@ -1,6 +1,8 @@
-const TRELLO_ICON = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYBAMAAAASWSDLAAAAA3NCSVQICAjb4U/gAAAACXBIWXMAAACmAAAApgHdff84AAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAACRQTFRFAGbMA3a9A3e8Ane9A3e9GYPCR5rMa63Ud7PXvNfm4Onu7O/xNljIFwAAAAN0Uk5TBWHLjO1H6wAAAGRJREFUGNNjYFQ2hgIjAQZhYzgwZFBGcIwYjM1X794ZbDp7965iYwZjq927dxebA4nFQI41kG62ABKbacMxAxKTYRyTjI72YBgH4jiiOZZATjKMY1rR0eYM4yABVG+jBAhyUAEAulltP7yEQqgAAAAASUVORK5CYII='
+import { TRELLO_ICON } from './constants'
+import Storage from './storage'
+import HabiticaApi from './habitica-api'
 
-class Task {
+export default class Task {
   constructor(
     trello,
     storage = new Storage(trello),
@@ -71,6 +73,3 @@ class Task {
       ))
   }
 }
-
-// Fails in a browser, but required for tests.
-try { module.exports = Task } catch(_) {}

@@ -1,14 +1,8 @@
-LIST_TYPES = {
-  DONE: 'done',
-  DOING: 'doing'
-}
+import { CARD_SCOPES, LIST_TYPES } from './constants'
+import Storage from './storage'
+import Task from './task'
 
-const CARD_SCOPES = {
-  ASSIGNED_TO_ME: 'me',
-  NONE: 'none'
-}
-
-class Sync {
+export default class Sync {
   constructor(
     trello,
     storage = new Storage(trello)
@@ -81,6 +75,3 @@ class Sync {
     }
   }
 }
-
-// Fails in a browser, but required for tests.
-try { module.exports = Sync } catch(_) {}

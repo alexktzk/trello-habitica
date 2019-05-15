@@ -1,5 +1,6 @@
-const Sync = require('../public/js/sync')
-const Storage = require('../public/js/storage')
+import Storage from '../src/js/storage'
+import Sync from '../src/js/sync'
+import { LIST_TYPES } from '../src/js/constants'
 
 let taskMock = { 
   handleAdd: jest.fn(async () => {}),
@@ -30,7 +31,7 @@ describe('Sync class', () => {
 
   describe('.start()', () => {
     describe('preparations', () => {
-      let t, storage, sync
+      let t, storage, sync, settings, cardData, context
 
       beforeAll(() => {
         cardData = { members: [] }
@@ -69,10 +70,9 @@ describe('Sync class', () => {
     })
 
     describe('when syncing only cards that was assigned to me', () => {
-      let t = {}, storage = {}, sync, me
+      let t = {}, storage = {}, sync, me, settings, context
 
       beforeAll(() => {
-        taskData = { id: 456, priority: 1 }
         me = { id: 123 }
         settings = { scope: 'me' }
         context = { member: me.id }
@@ -132,7 +132,7 @@ describe('Sync class', () => {
     })
 
     describe('when syncing all the cards', () => {
-      let t, storage, sync, card, lists, task
+      let t, storage, sync, card, lists, task, settings
 
       beforeAll(() => {
         settings = { scope: 'all' }

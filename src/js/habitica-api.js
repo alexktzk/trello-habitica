@@ -1,6 +1,7 @@
-const API = 'https://habitica.com/api/v3'
+import { API } from './constants'
+import Storage from './storage'
 
-class HabiticaApi {
+export default class HabiticaApi {
   constructor(
     trello, 
     storage = new Storage(trello)
@@ -96,6 +97,3 @@ class HabiticaApi {
     })
   }
 }
-
-// Fails in a browser, but required for tests.
-try { module.exports = HabiticaApi } catch(_) {}
