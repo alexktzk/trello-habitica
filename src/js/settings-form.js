@@ -1,3 +1,5 @@
+/* eslint-disable class-methods-use-this */
+
 import Storage from './storage';
 
 export default class SettingsForm {

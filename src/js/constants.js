@@ -1,4 +1,4 @@
-export const API = 'https://habitica.com/api/v3';
+export const BASE_URL = 'https://habitica.com/api/v3';
 
 export const LIST_TYPES = {
   DONE: 'done',

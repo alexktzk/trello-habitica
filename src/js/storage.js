@@ -1,8 +1,8 @@
 export default class Storage {
   constructor(trello) {
-    this.t = trello
+    this.t = trello;
   }
-  
+
   getAll() {
     return this.t.getAll();
   }
@@ -21,7 +21,12 @@ export default class Storage {
 
   setUser(obj) {
     return this.t.get('board', 'private', 'user', {}).then(current => {
-      return this.t.set('board', 'private', 'user', Object.assign({}, current, obj));
+      return this.t.set(
+        'board',
+        'private',
+        'user',
+        Object.assign({}, current, obj)
+      );
     });
   }
 
@@ -35,7 +40,12 @@ export default class Storage {
 
   setTask(obj) {
     return this.t.get('card', 'private', 'task', {}).then(current => {
-      return this.t.set('card', 'private', 'task', Object.assign({}, current, obj));
+      return this.t.set(
+        'card',
+        'private',
+        'task',
+        Object.assign({}, current, obj)
+      );
     });
   }
 
@@ -44,20 +54,25 @@ export default class Storage {
   }
 
   getSettings() {
-    let defaultSettings = {
+    const defaultSettings = {
       scope: 'me',
       priority: '1',
       showBadges: true,
       prependIcon: false
     };
     return this.t.get('board', 'private', 'settings', {}).then(settings => {
-      return Object.assign({}, defaultSettings, settings)
+      return Object.assign({}, defaultSettings, settings);
     });
   }
 
   setSettings(obj) {
     return this.t.get('board', 'private', 'settings', {}).then(current => {
-      return this.t.set('board', 'private', 'settings', Object.assign({}, current, obj));
+      return this.t.set(
+        'board',
+        'private',
+        'settings',
+        Object.assign({}, current, obj)
+      );
     });
   }
 
