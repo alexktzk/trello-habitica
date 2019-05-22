@@ -1,0 +1,11 @@
+{
+  "env": {
+    "jest": true
+  },
+  "globals": {
+    "document": true
+  },
+  "extends": ["airbnb-base", "prettier"],
+  "plugins": ["prettier"],
+  "parser": "babel-eslint"
+}
