@@ -21,6 +21,7 @@ const syncWithHabitica = async t => {
 // eslint-disable-next-line no-undef
 TrelloPowerUp.initialize({
   'board-buttons': async t => {
+    let buttons;
     const currentUser = await new Storage(t).getUser();
 
     const settingsPage = tt =>
@@ -37,23 +38,59 @@ TrelloPowerUp.initialize({
         height: 340
       });
 
-    return [
-      {
-        icon: ICONS.HABITICA,
-        text: currentUser.loggedIn ? currentUser.name : 'Login',
-        callback: currentUser.loggedIn ? settingsPage : loginPage
-      },
-      {
-        icon: ICONS.NOTIFICATIONS,
-        text: ' ',
-        callback: tt =>
-          tt.popup({
-            title: "What's new?",
-            url: './changelog/',
-            height: 525
-          })
-      }
-    ];
+    if (currentUser.loggedIn) {
+      buttons = [
+        {
+          condition: 'always',
+          icon: {
+            dark: ICONS.NOTIFICATIONS.WHITE,
+            light: ICONS.NOTIFICATIONS.BLACK
+          },
+          text: 5
+        },
+        {
+          condition: 'always',
+          icon: {
+            dark: ICONS.EXP,
+            light: ICONS.EXP
+          },
+          text: currentUser.exp
+            ? `${currentUser.exp} / ${currentUser.expToNextLevel}`
+            : '?'
+        },
+        {
+          condition: 'always',
+          icon: {
+            dark: ICONS.GOLD,
+            light: ICONS.GOLD
+          },
+          text: currentUser.gold ? currentUser.gold.toFixed(2) : '?'
+        },
+        {
+          condition: 'always',
+          icon: {
+            dark: ICONS.HABITICA_LOGO,
+            light: ICONS.HABITICA_LOGO
+          },
+          text: currentUser.name,
+          callback: settingsPage
+        }
+      ];
+    } else {
+      buttons = [
+        {
+          condition: 'always',
+          icon: {
+            dark: ICONS.HABITICA_LOGO,
+            light: ICONS.HABITICA_LOGO
+          },
+          text: 'Login',
+          callback: loginPage
+        }
+      ];
+    }
+
+    return buttons;
   },
   'card-badges': async t => {
     const storage = new Storage(t);
@@ -65,9 +102,10 @@ TrelloPowerUp.initialize({
       if (!settings.showBadges) return [];
 
       const taskData = await storage.getTask();
+
       return [
-        { icon: taskData.id ? ICONS.TASK_DOING : null },
-        { icon: taskData.done ? ICONS.TASK_DONE : null }
+        { icon: taskData.id ? ICONS.HABITICA_LOGO : null },
+        { icon: taskData.done ? ICONS.CHECKED : null }
       ];
     });
   },
