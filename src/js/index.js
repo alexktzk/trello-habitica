@@ -18,6 +18,13 @@ const syncWithHabitica = async t => {
   return syncing[id];
 };
 
+const priorityIcon = {
+  0.1: ICONS.TRIVIAL,
+  1: ICONS.EASY,
+  1.5: ICONS.MEDIUM,
+  2: ICONS.HARD
+};
+
 // eslint-disable-next-line no-undef
 TrelloPowerUp.initialize({
   'board-buttons': async t => {
@@ -26,9 +33,9 @@ TrelloPowerUp.initialize({
 
     const settingsPage = tt =>
       tt.popup({
-        title: 'Habitica settings',
+        title: 'Settings',
         url: './settings.html',
-        height: 394
+        height: 270
       });
 
     const loginPage = tt =>
@@ -40,14 +47,6 @@ TrelloPowerUp.initialize({
 
     if (currentUser.loggedIn) {
       buttons = [
-        {
-          condition: 'always',
-          icon: {
-            dark: ICONS.NOTIFICATIONS.WHITE,
-            light: ICONS.NOTIFICATIONS.BLACK
-          },
-          text: 5
-        },
         {
           condition: 'always',
           icon: {
@@ -104,7 +103,7 @@ TrelloPowerUp.initialize({
       const taskData = await storage.getTask();
 
       return [
-        { icon: taskData.id ? ICONS.HABITICA_LOGO : null },
+        { icon: taskData.id ? priorityIcon[taskData.priority] : null },
         { icon: taskData.done ? ICONS.CHECKED : null }
       ];
     });

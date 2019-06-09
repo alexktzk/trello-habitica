@@ -36,14 +36,11 @@ export default class TaskForm {
 
   handleSubmit() {
     this.$submitButton.disabled = true;
+    const priority = Number(this.$priority.value);
 
     this.storage
       .getTask()
-      .then(task => {
-        if (task.priority === this.$priority.value) return;
-
-        this.updatePriority(this.$priority.value);
-      })
+      .then(task => task.priority !== priority && this.updatePriority(priority))
       .then(() => this.t.closePopup());
   }
 }
