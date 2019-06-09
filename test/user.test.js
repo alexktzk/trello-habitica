@@ -126,127 +126,149 @@ describe('User class', () => {
         exp: 200
       };
 
-      t.alert = jest.fn(async () => ({}));
+      t.alert = jest.fn(async () => ({ notified: true }));
       storage.getUser = async () => currentUser;
     });
 
-    describe('when user is gained exp and gold', () => {
+    describe('when stats notifications are disabled', () => {
       beforeAll(() => {
-        stats = {
-          gold: 101,
-          exp: 201
-        };
+        storage.getSettings = async () => ({ showStatsNotifications: false });
       });
 
-      beforeEach(() => {
+      it('does nothing', async () => {
         user = new User(t, storage);
-      });
-
-      it('uses _gained_ word in the message', async () => {
-        await user.notifyAboutStats(stats);
-        expect(user.t.alert).toBeCalledWith(
-          expect.objectContaining({
-            message: expect.stringMatching('gained')
-          })
-        );
-      });
-
-      it('display notification as success', async () => {
-        await user.notifyAboutStats(stats);
-        expect(user.t.alert).toBeCalledWith(
-          expect.objectContaining({
-            display: 'success'
-          })
-        );
-      });
-
-      it('displays how many exp was gained', async () => {
-        await user.notifyAboutStats(stats);
-        expect(user.t.alert).toBeCalledWith(
-          expect.objectContaining({
-            message: expect.stringMatching(`${stats.exp - currentUser.exp} exp`)
-          })
-        );
-      });
-
-      it('displays how many gold was gained', async () => {
-        await user.notifyAboutStats(stats);
-        expect(user.t.alert).toBeCalledWith(
-          expect.objectContaining({
-            message: expect.stringMatching(
-              `${(stats.gold - currentUser.gold).toFixed(2)} gold`
-            )
-          })
-        );
-      });
-
-      it('displays the notification for 5 seconds', async () => {
-        await user.notifyAboutStats(stats);
-        expect(user.t.alert).toBeCalledWith(
-          expect.objectContaining({
-            duration: 5
-          })
-        );
+        const result = await user.notifyAboutStats(currentUser);
+        expect(result).toBe(undefined);
       });
     });
 
-    describe('when user is lost exp and gold', () => {
+    describe('when stats notifications are enabled', () => {
       beforeAll(() => {
-        stats = {
-          gold: 99,
-          exp: 199
-        };
+        storage.getSettings = async () => ({ showStatsNotifications: true });
       });
 
-      beforeEach(() => {
-        user = new User(t, storage);
+      describe('when user is gained exp and gold', () => {
+        beforeAll(() => {
+          stats = {
+            gold: 101,
+            exp: 201
+          };
+        });
+
+        beforeEach(() => {
+          user = new User(t, storage);
+        });
+
+        it('uses _gained_ word in the message', async () => {
+          await user.notifyAboutStats(stats);
+          expect(user.t.alert).toBeCalledWith(
+            expect.objectContaining({
+              message: expect.stringMatching('gained')
+            })
+          );
+        });
+
+        it('display notification as success', async () => {
+          await user.notifyAboutStats(stats);
+          expect(user.t.alert).toBeCalledWith(
+            expect.objectContaining({
+              display: 'success'
+            })
+          );
+        });
+
+        it('displays how many exp was gained', async () => {
+          await user.notifyAboutStats(stats);
+          expect(user.t.alert).toBeCalledWith(
+            expect.objectContaining({
+              message: expect.stringMatching(
+                `${stats.exp - currentUser.exp} exp`
+              )
+            })
+          );
+        });
+
+        it('displays how many gold was gained', async () => {
+          await user.notifyAboutStats(stats);
+          expect(user.t.alert).toBeCalledWith(
+            expect.objectContaining({
+              message: expect.stringMatching(
+                `${(stats.gold - currentUser.gold).toFixed(2)} gold`
+              )
+            })
+          );
+        });
+
+        it('displays the notification for 5 seconds', async () => {
+          await user.notifyAboutStats(stats);
+          expect(user.t.alert).toBeCalledWith(
+            expect.objectContaining({
+              duration: 5
+            })
+          );
+        });
       });
 
-      it('uses _lost_ word in the message', async () => {
-        await user.notifyAboutStats(stats);
-        expect(user.t.alert).toBeCalledWith(
-          expect.objectContaining({
-            message: expect.stringMatching('lost')
-          })
-        );
-      });
+      describe('when user is lost exp and gold', () => {
+        beforeAll(() => {
+          stats = {
+            gold: 99,
+            exp: 199
+          };
+        });
 
-      it('display notification as error', async () => {
-        await user.notifyAboutStats(stats);
-        expect(user.t.alert).toBeCalledWith(
-          expect.objectContaining({
-            display: 'error'
-          })
-        );
-      });
+        beforeEach(() => {
+          user = new User(t, storage);
+        });
 
-      it('displays how many exp was lost', async () => {
-        await user.notifyAboutStats(stats);
-        expect(user.t.alert).toBeCalledWith(
-          expect.objectContaining({
-            message: expect.stringMatching(`${stats.exp - currentUser.exp} exp`)
-          })
-        );
-      });
+        it('uses _lost_ word in the message', async () => {
+          await user.notifyAboutStats(stats);
+          expect(user.t.alert).toBeCalledWith(
+            expect.objectContaining({
+              message: expect.stringMatching('lost')
+            })
+          );
+        });
 
-      it('displays how many gold was lost', async () => {
-        await user.notifyAboutStats(stats);
-        expect(user.t.alert).toBeCalledWith(
-          expect.objectContaining({
-            message: expect.stringMatching(
-              `${(stats.gold - currentUser.gold).toFixed(2)} gold`
-            )
-          })
-        );
-      });
+        it('display notification as error', async () => {
+          await user.notifyAboutStats(stats);
+          expect(user.t.alert).toBeCalledWith(
+            expect.objectContaining({
+              display: 'error'
+            })
+          );
+        });
 
-      it('displays the notification for 5 seconds', async () => {
-        await user.notifyAboutStats(stats);
-        expect(user.t.alert).toBeCalledWith(
-          expect.objectContaining({
-            duration: 5
-          })
-        );
+        it('displays how many exp was lost', async () => {
+          await user.notifyAboutStats(stats);
+          expect(user.t.alert).toBeCalledWith(
+            expect.objectContaining({
+              message: expect.stringMatching(
+                `${stats.exp - currentUser.exp} exp`
+              )
+            })
+          );
+        });
+
+        it('displays how many gold was lost', async () => {
+          await user.notifyAboutStats(stats);
+          expect(user.t.alert).toBeCalledWith(
+            expect.objectContaining({
+              message: expect.stringMatching(
+                `${(stats.gold - currentUser.gold).toFixed(2)} gold`
+              )
+            })
+          );
+        });
+
+        it('displays the notification for 5 seconds', async () => {
+          await user.notifyAboutStats(stats);
+          expect(user.t.alert).toBeCalledWith(
+            expect.objectContaining({
+              duration: 5
+            })
+          );
+        });
       });
     });
   });
