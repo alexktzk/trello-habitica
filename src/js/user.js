@@ -23,10 +23,9 @@ export default class Task {
   async updateStats({ gp, exp, lvl }) {
     const gold = gp;
 
-    return this.notifyAboutStats({ gold, exp }).then(async () => {
-      const expToNextLevel = await this.calculateExpToNextLevel(lvl);
-      return this.storage.setUser({ lvl, gold, exp, expToNextLevel });
-    });
+    this.notifyAboutStats({ gold, exp });
+    const expToNextLevel = await this.calculateExpToNextLevel(lvl);
+    return this.storage.setUser({ lvl, gold, exp, expToNextLevel });
   }
 
   async notifyAboutStats({ exp, gold }) {
