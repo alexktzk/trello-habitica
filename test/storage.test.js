@@ -273,9 +273,11 @@ describe('Storage class', () => {
     beforeAll(() => {
       settingsData = {
         scope: 'me',
-        priority: '1',
+        priority: 1,
+        prependIcon: false,
         showBadges: true,
-        prependIcon: false
+        showStats: true,
+        showStatsNotifications: true
       };
       t.get = jest.fn(async () => settingsData);
     });

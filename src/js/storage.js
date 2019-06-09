@@ -56,9 +56,11 @@ export default class Storage {
   getSettings() {
     const defaultSettings = {
       scope: 'me',
-      priority: '1',
+      priority: 1,
+      prependIcon: true,
       showBadges: true,
-      prependIcon: false
+      showStats: true,
+      showStatsNotifications: true
     };
     return this.t.get('board', 'private', 'settings', {}).then(settings => {
       return Object.assign({}, defaultSettings, settings);

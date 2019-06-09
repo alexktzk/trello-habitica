@@ -88,6 +88,12 @@ export default class HabiticaApi {
     });
   }
 
+  getUserStats() {
+    return this.request('/user?userFields=stats', {
+      method: 'GET'
+    });
+  }
+
   notify(message, display = 'info') {
     this.t.alert({
       message,

@@ -1,5 +1,5 @@
 import Task from '../src/js/task';
-import { TRELLO_ICON } from '../src/js/constants';
+import { ICONS } from '../src/js/constants';
 
 jest.mock('../src/js/habitica-api');
 
@@ -85,7 +85,7 @@ describe('Task class', () => {
 
       it('prepends the icon', async () => {
         const template = await task.getTemplate(card);
-        expect(template.text).toMatch(TRELLO_ICON);
+        expect(template.text).toMatch(ICONS.TRELLO_LOGO);
       });
     });
 
@@ -96,7 +96,7 @@ describe('Task class', () => {
 
       it('not prepends the icon', async () => {
         const template = await task.getTemplate(card);
-        expect(template.text).not.toMatch(TRELLO_ICON);
+        expect(template.text).not.toMatch(ICONS.TRELLO_LOGO);
       });
     });
   });
@@ -204,9 +204,11 @@ describe('Task class', () => {
   describe('.handleDo()', () => {
     const t = {};
     const storage = {};
+    let res;
     let API;
     let task;
     let taskData;
+    let user;
 
     beforeAll(() => {
       taskData = { id: 123 };
@@ -214,13 +216,25 @@ describe('Task class', () => {
       storage.getTask = jest.fn(async () => taskData);
       storage.setTask = jest.fn(async () => ({}));
 
+      res = {
+        data: {
+          gp: 100,
+          exp: 200,
+          lvl: 37
+        }
+      };
+
       API = {
-        doTask: jest.fn(async () => ({}))
+        doTask: jest.fn(async () => res)
+      };
+
+      user = {
+        updateStats: jest.fn()
       };
     });
 
     beforeEach(() => {
-      task = new Task(t, storage, API);
+      task = new Task(t, storage, API, user);
     });
 
     it('gets task data from the storage', async () => {
@@ -237,6 +251,11 @@ describe('Task class', () => {
       await task.handleDo();
       expect(task.storage.setTask).toBeCalledWith({ done: true });
     });
+
+    it('updates user stats with response data', async () => {
+      await task.handleDo();
+      expect(task.currentUser.updateStats).toBeCalledWith(res.data);
+    });
   });
 
   describe('.handleUndo()', () => {
@@ -245,6 +264,8 @@ describe('Task class', () => {
     let API;
     let task;
     let taskData;
+    let user;
+    let res;
 
     beforeAll(() => {
       taskData = { id: 123 };
@@ -252,13 +273,25 @@ describe('Task class', () => {
       storage.getTask = jest.fn(async () => taskData);
       storage.setTask = jest.fn(async () => ({}));
 
+      res = {
+        data: {
+          gp: 100,
+          exp: 200,
+          lvl: 37
+        }
+      };
+
       API = {
-        undoTask: jest.fn(async () => ({}))
+        undoTask: jest.fn(async () => res)
+      };
+
+      user = {
+        updateStats: jest.fn()
       };
     });
 
     beforeEach(() => {
-      task = new Task(t, storage, API);
+      task = new Task(t, storage, API, user);
     });
 
     it('gets task data from the storage', async () => {
@@ -274,6 +307,11 @@ describe('Task class', () => {
     it('marks task as not done in the storage', async () => {
       await task.handleUndo();
       expect(task.storage.setTask).toBeCalledWith({ done: false });
+    });
+
+    it('updates user stats with response data', async () => {
+      await task.handleUndo();
+      expect(task.currentUser.updateStats).toBeCalledWith(res.data);
     });
   });
 
