@@ -1,23 +1,22 @@
-import { API } from './constants'
-import Storage from './storage'
+import { BASE_URL } from './constants';
+import Storage from './storage';
 
 export default class HabiticaApi {
-  constructor(
-    trello, 
-    storage = new Storage(trello)
-  ) {
-    this.t = trello
-    this.storage = storage
+  constructor(trello, storage = new Storage(trello)) {
+    this.t = trello;
+    this.storage = storage;
   }
 
-  async request(url, userParams = {}) {
-    let defaultParams = { 
+  async request(path, userParams = {}) {
+    const url = BASE_URL + path;
+    const defaultParams = {
       headers: await this.authHeaders()
-    }
+    };
 
-    let params = Object.assign({}, defaultParams, userParams)
-    return fetch(url, params)
-      .then(res => this.handleResponse(res))
+    const params = Object.assign({}, defaultParams, userParams);
+
+    // eslint-disable-next-line no-undef
+    return fetch(url, params).then(res => this.handleResponse(res));
   }
 
   async authHeaders() {
@@ -25,68 +24,74 @@ export default class HabiticaApi {
       'x-api-user': await this.t.loadSecret('userId'),
       'x-api-key': await this.t.loadSecret('apiToken'),
       'Content-Type': 'application/json'
-    }
+    };
   }
 
   handleResponse(res) {
-    if (res.ok) {
-      return res.json()
-    } else {
-      return this.handleError(res)
-    }
+    if (res.ok) return res.json();
+
+    return this.handleError(res);
   }
 
   async handleError(error) {
-    if (error.status == 401) {
-      await this.storage.removeUser().then(() => (
-        this.notify(
-          "Wrong User ID or API Token. Try to login again.", 
-          'error'
-        )
-      ))
-    } else if (error.status == 404) {
-      await this.storage.removeTask()
+    if (error.status === 401) {
+      await this.storage
+        .removeUser()
+        .then(() =>
+          this.notify(
+            'Wrong User ID or API Token. Try to login again.',
+            'error'
+          )
+        );
+    } else if (error.status === 404) {
+      await this.storage.removeTask();
     }
 
-    return error
+    return error;
   }
-  
+
   addTask(params) {
-    return this.request(API + '/tasks/user', {
+    return this.request('/tasks/user', {
       method: 'POST',
-      body: JSON.stringify(params),
-    })
+      body: JSON.stringify(params)
+    });
   }
 
   updateTask(id, params) {
-    return this.request(API + `/tasks/${id}`, {
+    return this.request(`/tasks/${id}`, {
       method: 'PUT',
       body: JSON.stringify(params)
-    })
+    });
   }
 
   doTask(id) {
-    return this.request(API + `/tasks/${id}/score/up`, {
-      method: 'POST',
-    })
+    return this.request(`/tasks/${id}/score/up`, {
+      method: 'POST'
+    });
   }
 
   undoTask(id) {
-    return this.request(API + `/tasks/${id}/score/down`, {
-      method: 'POST',
-    })
+    return this.request(`/tasks/${id}/score/down`, {
+      method: 'POST'
+    });
   }
 
   removeTask(id) {
-    return this.request(API + `/tasks/${id}`, {
-      method: 'DELETE',
-    })
+    return this.request(`/tasks/${id}`, {
+      method: 'DELETE'
+    });
   }
 
   getUserProfile() {
-    return this.request(API + '/user?userFields=profile', {
+    return this.request('/user?userFields=profile', {
       method: 'GET'
-    })
+    });
+  }
+
+  getUserStats() {
+    return this.request('/user?userFields=stats', {
+      method: 'GET'
+    });
   }
 
   notify(message, display = 'info') {
@@ -94,6 +99,6 @@ export default class HabiticaApi {
       message,
       display,
       duration: 10
-    })
+    });
   }
 }

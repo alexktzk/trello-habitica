@@ -1,3 +1,5 @@
+/* eslint-disable class-methods-use-this */
+
 import Storage from './storage';
 
 export default class SettingsForm {
@@ -7,52 +9,34 @@ export default class SettingsForm {
   }
 
   initialize() {
-    this.storage.getSettings().then(settings => {
-      this.initializeElements();
-
-      this.setScope(settings.scope);
-      this.setPriority(settings.priority);
-      this.setShowBadges(settings.showBadges);
-      this.setPrependIcon(settings.prependIcon);
-
-      this.listenToSubmit();
-      this.listenToLogout();
-    });
+    this.initializeElements();
+    this.assignValues();
+    this.listenToSubmit();
+    this.listenToLogout();
   }
 
   initializeElements() {
     this.$scope = document.getElementById('scope');
     this.$priority = document.getElementById('priority');
+    this.$prependIcon = document.getElementById('prepend-icon');
+    this.$showBadges = document.getElementById('show-badges');
+    this.$showStats = document.getElementById('show-stats');
     this.$submitButton = document.getElementById('submit-btn');
     this.$logoutButton = document.getElementById('logout-btn');
+    this.$showStatsNotifications = document.getElementById(
+      'show-stats-notifications'
+    );
   }
 
-  setScope(val) {
-    this.$scope.value = val;
-  }
-
-  setPriority(val) {
-    this.$priority.value = val;
-  }
-
-  setShowBadges(val) {
-    const el = document.querySelector(`#show-badges-${val}`);
-    if (el) el.checked = true;
-  }
-
-  getShowBadges() {
-    const el = document.querySelector('input[name="show-badges"]:checked');
-    return el ? JSON.parse(el.value) : true;
-  }
-
-  setPrependIcon(val) {
-    const el = document.querySelector(`#prepend-icon-${val}`);
-    if (el) el.checked = true;
-  }
-
-  getPrependIcon() {
-    const el = document.querySelector('input[name="prepend-icon"]:checked');
-    return el ? JSON.parse(el.value) : false;
+  assignValues() {
+    return this.storage.getSettings().then(async settings => {
+      this.$scope.value = settings.scope;
+      this.$priority.value = settings.priority;
+      this.$prependIcon.checked = settings.prependIcon;
+      this.$showBadges.checked = settings.showBadges;
+      this.$showStats.checked = settings.showStats;
+      this.$showStatsNotifications.checked = settings.showStatsNotifications;
+    });
   }
 
   listenToSubmit() {
@@ -70,8 +54,10 @@ export default class SettingsForm {
       .setSettings({
         scope: this.$scope.value,
         priority: this.$priority.value,
-        showBadges: this.getShowBadges(),
-        prependIcon: this.getPrependIcon()
+        prependIcon: this.$prependIcon.checked,
+        showBadges: this.$showBadges.checked,
+        showStats: this.$showStats.checked,
+        showStatsNotifications: this.$showStatsNotifications.checked
       })
       .then(() => this.t.closePopup());
   }

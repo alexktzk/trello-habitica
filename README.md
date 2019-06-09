@@ -14,9 +14,7 @@ Now it's time to fill in the form.
 2. To work properly this Power-Up requires some permissions. Make sure you've checked all of the following:
 
 - board-buttons
-- callback
 - card-badges
-- card-buttons
 - card-detail-badges
 - list-actions
 

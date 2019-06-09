@@ -3,10 +3,10 @@ import Storage from './storage';
 import Sync from './sync';
 import List from './list';
 
-let syncing = {};
+const syncing = {};
 
 const syncWithHabitica = async t => {
-  let id = t.getContext().card;
+  const id = t.getContext().card;
 
   // prevent duplicated tries to sync while previous sync in progress
   if (syncing[id]) return syncing[id];
@@ -18,68 +18,109 @@ const syncWithHabitica = async t => {
   return syncing[id];
 };
 
+const priorityIcon = {
+  0.1: ICONS.TRIVIAL,
+  1: ICONS.EASY,
+  1.5: ICONS.MEDIUM,
+  2: ICONS.HARD
+};
+
+// eslint-disable-next-line no-undef
 TrelloPowerUp.initialize({
   'board-buttons': async t => {
-    let currentUser = await new Storage(t).getUser();
+    let buttons;
+    const storage = new Storage(t);
+    const currentUser = await storage.getUser();
+    const settings = await storage.getSettings();
 
-    let settingsPage = t =>
-      t.popup({
-        title: 'Habitica settings',
-        url: './settings.html',
-        height: 394
-      });
+    if (currentUser.loggedIn) {
+      buttons = [
+        {
+          condition: 'always',
+          icon: {
+            dark: ICONS.HABITICA_LOGO,
+            light: ICONS.HABITICA_LOGO
+          },
+          text: currentUser.name,
+          callback: tt =>
+            tt.popup({
+              title: 'Settings',
+              url: './settings.html',
+              height: 270
+            })
+        }
+      ];
 
-    let loginPage = t =>
-      t.popup({
-        title: 'Log in Habitica',
-        url: './login.html',
-        height: 340
-      });
-
-    return [
-      {
-        icon: ICONS.HABITICA,
-        text: currentUser.loggedIn ? currentUser.name : 'Login',
-        callback: currentUser.loggedIn ? settingsPage : loginPage
-      },
-      {
-        icon: ICONS.NOTIFICATIONS,
-        text: ' ',
-        callback: t =>
-          t.popup({
-            title: "What's new?",
-            url: './changelog/',
-            height: 525
-          })
+      if (settings.showStats) {
+        buttons.unshift(
+          {
+            condition: 'always',
+            icon: {
+              dark: ICONS.EXP,
+              light: ICONS.EXP
+            },
+            text: currentUser.exp
+              ? `${currentUser.exp} / ${currentUser.expToNextLevel}`
+              : '?'
+          },
+          {
+            condition: 'always',
+            icon: {
+              dark: ICONS.GOLD,
+              light: ICONS.GOLD
+            },
+            text: currentUser.gold ? currentUser.gold.toFixed(2) : '?'
+          }
+        );
       }
-    ];
+    } else {
+      buttons = [
+        {
+          condition: 'always',
+          icon: {
+            dark: ICONS.HABITICA_LOGO,
+            light: ICONS.HABITICA_LOGO
+          },
+          text: 'Login',
+          callback: tt =>
+            tt.popup({
+              title: 'Log in Habitica',
+              url: './login.html',
+              height: 340
+            })
+        }
+      ];
+    }
+
+    return buttons;
   },
   'card-badges': async t => {
-    let storage = new Storage(t);
-    let currentUser = await storage.getUser();
+    const storage = new Storage(t);
+    const currentUser = await storage.getUser();
     if (!currentUser.loggedIn) return [];
 
     return syncWithHabitica(t).then(async () => {
-      let settings = await storage.getSettings();
+      const settings = await storage.getSettings();
       if (!settings.showBadges) return [];
 
-      let taskData = await storage.getTask();
+      const taskData = await storage.getTask();
+
       return [
-        { icon: taskData.id ? ICONS.TASK_DOING : null },
-        { icon: taskData.done ? ICONS.TASK_DONE : null }
+        { icon: taskData.id ? priorityIcon[taskData.priority] : null },
+        { icon: taskData.done ? ICONS.CHECKED : null }
       ];
     });
   },
   'card-detail-badges': async t => {
-    let taskData = await new Storage(t).getTask();
+    const taskData = await new Storage(t).getTask();
     if (!taskData.id) return [];
 
     return [
       {
         title: 'To-Do',
         text: 'Edit',
-        callback: t =>
-          t.popup({
+        callback: tt =>
+          tt.popup({
             title: 'Edit To-Do',
             url: './edit-task.html',
             height: 240
@@ -88,39 +129,40 @@ TrelloPowerUp.initialize({
     ];
   },
   'list-actions': async t => {
-    let storage = new Storage(t);
-    let currentUser = await storage.getUser();
+    const storage = new Storage(t);
+    const currentUser = await storage.getUser();
     if (!currentUser.loggedIn) return [];
 
     return storage.getLists().then(lists => {
       return t.list('id').then(list => {
         const listType = lists[list.id];
 
-        if (listType === LIST_TYPES.DOING) {
-          return [
-            {
-              text: 'Unmark list as "Doing"',
-              callback: t => new List(t).unmark()
-            }
-          ];
-        } else if (listType === LIST_TYPES.DONE) {
-          return [
-            {
-              text: 'Unmark list as "Done"',
-              callback: t => new List(t).unmark()
-            }
-          ];
-        } else {
-          return [
-            {
-              text: 'Mark list as "Doing"',
-              callback: t => new List(t).markAsDoing()
-            },
-            {
-              text: 'Mark list as "Done"',
-              callback: t => new List(t).markAsDone()
-            }
-          ];
+        switch (listType) {
+          case LIST_TYPES.DOING:
+            return [
+              {
+                text: 'Unmark list as "Doing"',
+                callback: tt => new List(tt).unmark()
+              }
+            ];
+          case LIST_TYPES.DONE:
+            return [
+              {
+                text: 'Unmark list as "Done"',
+                callback: tt => new List(tt).unmark()
+              }
+            ];
+          default:
+            return [
+              {
+                text: 'Mark list as "Doing"',
+                callback: tt => new List(tt).markAsDoing()
+              },
+              {
+                text: 'Mark list as "Done"',
+                callback: tt => new List(tt).markAsDone()
+              }
+            ];
         }
       });
     });
