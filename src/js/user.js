@@ -29,8 +29,10 @@ export default class Task {
   }
 
   async notifyAboutStats({ exp, gold }) {
-    const currentUser = await this.storage.getUser();
+    const settings = await this.storage.getSettings();
+    if (!settings.showStatsNotifications) return undefined;
 
+    const currentUser = await this.storage.getUser();
     const expDiff = currentUser.exp ? exp - currentUser.exp : exp;
     const goldDiff = currentUser.gold ? gold - currentUser.gold : gold;
 

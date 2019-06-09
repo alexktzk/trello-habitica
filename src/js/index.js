@@ -29,42 +29,12 @@ const priorityIcon = {
 TrelloPowerUp.initialize({
   'board-buttons': async t => {
     let buttons;
-    const currentUser = await new Storage(t).getUser();
-
-    const settingsPage = tt =>
-      tt.popup({
-        title: 'Settings',
-        url: './settings.html',
-        height: 270
-      });
-
-    const loginPage = tt =>
-      tt.popup({
-        title: 'Log in Habitica',
-        url: './login.html',
-        height: 340
-      });
+    const storage = new Storage(t);
+    const currentUser = await storage.getUser();
+    const settings = await storage.getSettings();
 
     if (currentUser.loggedIn) {
       buttons = [
-        {
-          condition: 'always',
-          icon: {
-            dark: ICONS.EXP,
-            light: ICONS.EXP
-          },
-          text: currentUser.exp
-            ? `${currentUser.exp} / ${currentUser.expToNextLevel}`
-            : '?'
-        },
-        {
-          condition: 'always',
-          icon: {
-            dark: ICONS.GOLD,
-            light: ICONS.GOLD
-          },
-          text: currentUser.gold ? currentUser.gold.toFixed(2) : '?'
-        },
         {
           condition: 'always',
           icon: {
@@ -72,9 +42,37 @@ TrelloPowerUp.initialize({
             light: ICONS.HABITICA_LOGO
           },
           text: currentUser.name,
-          callback: settingsPage
+          callback: tt =>
+            tt.popup({
+              title: 'Settings',
+              url: './settings.html',
+              height: 270
+            })
         }
       ];
+
+      if (settings.showStats) {
+        buttons.unshift(
+          {
+            condition: 'always',
+            icon: {
+              dark: ICONS.EXP,
+              light: ICONS.EXP
+            },
+            text: currentUser.exp
+              ? `${currentUser.exp} / ${currentUser.expToNextLevel}`
+              : '?'
+          },
+          {
+            condition: 'always',
+            icon: {
+              dark: ICONS.GOLD,
+              light: ICONS.GOLD
+            },
+            text: currentUser.gold ? currentUser.gold.toFixed(2) : '?'
+          }
+        );
+      }
     } else {
       buttons = [
         {
@@ -84,7 +82,12 @@ TrelloPowerUp.initialize({
             light: ICONS.HABITICA_LOGO
           },
           text: 'Login',
-          callback: loginPage
+          callback: tt =>
+            tt.popup({
+              title: 'Log in Habitica',
+              url: './login.html',
+              height: 340
+            })
         }
       ];
     }
