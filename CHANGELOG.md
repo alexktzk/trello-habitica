@@ -1,3 +1,10 @@
+# 1.2.1 (2019-06-09)
+
+### Added
+
+- Ability to show user's gold and exp points on the board bar. Ability to receive notifications when gained/lose exp and gold. ([2633ace](https://github.com/alexktzk/trello-habitica/commit/2633ace))
+- Ability to show to-do difficulty on a card badge with icons from Habitica. ([0467373](https://github.com/alexktzk/trello-habitica/commit/0467373))
+
 # 1.2.0 (2019-05-16)
 
 ### Added
