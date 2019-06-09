@@ -7,5 +7,8 @@
   },
   "extends": ["airbnb-base", "prettier"],
   "plugins": ["prettier"],
-  "parser": "babel-eslint"
+  "parser": "babel-eslint",
+  "rules": {
+    "class-methods-use-this": "off"
+  }
 }

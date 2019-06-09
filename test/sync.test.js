@@ -7,7 +7,7 @@ const taskMock = {
   handleUndo: jest.fn(async () => {}),
   handleRemove: jest.fn()
 };
-const getTaskMock = jest.fn(() => taskMock);
+const currentTaskMock = jest.fn(() => taskMock);
 
 describe('Sync class', () => {
   describe('constructor', () => {
@@ -194,7 +194,7 @@ describe('Sync class', () => {
 
     beforeEach(() => {
       sync = new Sync(t, storage);
-      sync.getTask = getTaskMock;
+      sync.currentTask = currentTaskMock;
     });
 
     describe('when to-do is present', () => {
@@ -209,12 +209,12 @@ describe('Sync class', () => {
 
         it('undo the to-do', () => {
           sync.handleScoped(taskData);
-          expect(sync.getTask().handleUndo).toBeCalledWith();
+          expect(sync.currentTask().handleUndo).toBeCalledWith();
         });
 
         it('removes the to-do', async () => {
           await sync.handleScoped(taskData);
-          expect(sync.getTask().handleRemove).toBeCalledWith();
+          expect(sync.currentTask().handleRemove).toBeCalledWith();
         });
       });
 
@@ -225,7 +225,7 @@ describe('Sync class', () => {
 
         it('removes the to-do', () => {
           sync.handleScoped(taskData);
-          expect(sync.getTask().handleRemove).toBeCalledWith();
+          expect(sync.currentTask().handleRemove).toBeCalledWith();
         });
       });
     });
@@ -240,7 +240,7 @@ describe('Sync class', () => {
 
     beforeEach(() => {
       sync = new Sync(t, storage);
-      sync.getTask = getTaskMock;
+      sync.currentTask = currentTaskMock;
     });
 
     describe('when card is moved to a list of type DOING', () => {
@@ -260,7 +260,7 @@ describe('Sync class', () => {
 
           it('undo the task', () => {
             sync.handle(taskData, listType);
-            expect(sync.getTask().handleUndo).toBeCalled();
+            expect(sync.currentTask().handleUndo).toBeCalled();
           });
         });
       });
@@ -272,7 +272,7 @@ describe('Sync class', () => {
 
         it('adds a task', () => {
           sync.handle(taskData, listType);
-          expect(sync.getTask().handleAdd).toBeCalled();
+          expect(sync.currentTask().handleAdd).toBeCalled();
         });
       });
     });
@@ -294,7 +294,7 @@ describe('Sync class', () => {
 
           it('do the task', () => {
             sync.handle(taskData, listType);
-            expect(sync.getTask().handleDo).toBeCalled();
+            expect(sync.currentTask().handleDo).toBeCalled();
           });
         });
       });
@@ -306,12 +306,12 @@ describe('Sync class', () => {
 
         it('adds a task', () => {
           sync.handle(taskData, listType);
-          expect(sync.getTask().handleAdd).toBeCalled();
+          expect(sync.currentTask().handleAdd).toBeCalled();
         });
 
         it('do the task', async () => {
           await sync.handle(taskData, listType);
-          expect(sync.getTask().handleDo).toBeCalled();
+          expect(sync.currentTask().handleDo).toBeCalled();
         });
       });
     });
@@ -333,12 +333,12 @@ describe('Sync class', () => {
 
           it('undo the task', () => {
             sync.handle(taskData, listType);
-            expect(sync.getTask().handleUndo).toBeCalled();
+            expect(sync.currentTask().handleUndo).toBeCalled();
           });
 
           it('removes the task', async () => {
             await sync.handle(taskData, listType);
-            expect(sync.getTask().handleRemove).toBeCalled();
+            expect(sync.currentTask().handleRemove).toBeCalled();
           });
         });
 
@@ -349,7 +349,7 @@ describe('Sync class', () => {
 
           it('removes the task', () => {
             sync.handle(taskData, listType);
-            expect(sync.getTask().handleRemove).toBeCalled();
+            expect(sync.currentTask().handleRemove).toBeCalled();
           });
         });
       });

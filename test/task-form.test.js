@@ -111,11 +111,11 @@ describe('TaskForm class', () => {
 
     describe('when task was changed', () => {
       beforeAll(() => {
-        task.priority = '1';
+        task.priority = 1;
       });
 
       beforeEach(() => {
-        form.$priority.value = '2';
+        form.$priority.value = 2;
       });
 
       it('saves priority to storage', async () => {
@@ -126,11 +126,11 @@ describe('TaskForm class', () => {
 
     describe('when task was not changed', () => {
       beforeAll(() => {
-        task.priority = '1';
+        task.priority = 1;
       });
 
       beforeEach(() => {
-        form.$priority.value = '1';
+        form.$priority.value = 1;
       });
 
       it('do nothing', async () => {

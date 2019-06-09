@@ -41,7 +41,7 @@ export default class List {
     this.t.alert({
       message,
       display,
-      duration: 3
+      duration: 5 // min is 5
     });
   }
 }

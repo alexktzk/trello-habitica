@@ -13,7 +13,7 @@ export default class Sync {
     this.task = undefined;
   }
 
-  getTask() {
+  currentTask() {
     this.task = this.task || new Task(this.t, this.storage);
     return this.task;
   }
@@ -24,7 +24,7 @@ export default class Sync {
     const taskData = await this.storage.getTask();
 
     // Skips the cards that are not assigned to user.
-    // Remove the badge if card was already synced.
+    // Removes the badge if card was already synced.
     if (settings.scope === CARD_SCOPES.ASSIGNED_TO_ME) {
       const me = this.t.getContext().member;
       if (!card.members.some(member => member.id === me)) {
@@ -41,11 +41,11 @@ export default class Sync {
   handleScoped(taskData) {
     if (taskData.id) {
       if (taskData.done) {
-        return this.getTask()
+        return this.currentTask()
           .handleUndo()
-          .then(() => this.getTask().handleRemove());
+          .then(() => this.currentTask().handleRemove());
       } else {
-        return this.getTask().handleRemove();
+        return this.currentTask().handleRemove();
       }
     }
   }
@@ -54,29 +54,29 @@ export default class Sync {
     if (listType === LIST_TYPES.DOING) {
       if (taskData.id) {
         if (taskData.done) {
-          return this.getTask().handleUndo();
+          return this.currentTask().handleUndo();
         }
       } else {
-        return this.getTask().handleAdd();
+        return this.currentTask().handleAdd();
       }
     } else if (listType === LIST_TYPES.DONE) {
       if (taskData.id) {
         if (!taskData.done) {
-          return this.getTask().handleDo();
+          return this.currentTask().handleDo();
         }
       } else {
-        return this.getTask()
+        return this.currentTask()
           .handleAdd()
-          .then(() => this.getTask().handleDo());
+          .then(() => this.currentTask().handleDo());
       }
     } else {
       if (taskData.id) {
         if (taskData.done) {
-          return this.getTask()
+          return this.currentTask()
             .handleUndo()
-            .then(() => this.getTask().handleRemove());
+            .then(() => this.currentTask().handleRemove());
         } else {
-          return this.getTask().handleRemove();
+          return this.currentTask().handleRemove();
         }
       }
     }
