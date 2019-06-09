@@ -3,33 +3,54 @@
   <head>
     <link rel="stylesheet" href="https://p.trellocdn.com/power-up.min.css">
     <script src="https://p.trellocdn.com/power-up.min.js"></script>
+    <style>
+      label {
+        font-weight: normal !important;
+      }
+    </style>
   </head>
   <body>
-    <h3>Preferences</h3>
-
-    <b>What cards to sync:</b>
+    What cards to sync: <br />
     <select id="scope">
       <option value="none">All</option>
       <option value="me">Only assigned to me</option>
     </select>
 
-    <b>Default difficulty for todos:</b>
+    Default difficulty for todos: <br />
     <select id="priority">
       <option value="0.1">Trivial</option>
       <option value="1">Easy</option>
       <option value="1.5">Medium</option>
       <option value="2">Hard</option>
     </select>
-
-    <b>Show card badges:</b> <br>
-    &ensp;<input type="radio" name="show-badges" id="show-badges-true" value="true"> Yes <br>
-    &ensp;<input type="radio" name="show-badges" id="show-badges-false" value="false"> No <br><br>
     
-    <b>Prepend trello icon to to-dos:</b> <br>
-    &ensp;<input type="radio" name="prepend-icon" id="prepend-icon-true" value="true"> Yes <br>
+    <label><input type="checkbox" id="prepend-icon" /> &ensp; Add trello icon to a to-do title</label>
+    <label><input type="checkbox" id="show-badges" /> &ensp; Show card badges</label>
+    <label><input type="checkbox" id="show-stats" /> &ensp; Show stats (exp, gold)</label>
+    <label><input type="checkbox" id="show-stats-notifications" /> &ensp; Show gained/lost notifications</label>
+    
+
+    <!-- Add trello icon to a to-do title: <br>
+    &ensp;<input type="radio" name="prepend-icon" id="prepend-icon-true" value="true"> Yes
     &ensp;<input type="radio" name="prepend-icon" id="prepend-icon-false" value="false"> No <br><br>
 
-    <button id="submit-btn" class="mod-primary">Save</button><br>
-    <button id="logout-btn" class="mod-danger">Log out</button>
+    Show card badges: <br>
+    &ensp;<input type="radio" name="show-badges" id="show-badges-true" value="true"> Yes
+    &ensp;<input type="radio" name="show-badges" id="show-badges-false" value="false"> No <br><br>
+
+    Show stats (exp, gold): <br />
+    &ensp;<input type="radio" name="show-stats" id="show-stats-true" value="true"> Yes
+    &ensp;<input type="radio" name="show-stats" id="show-stats-false" value="false"> No <br><br>
+
+    Show gained/lost notifications: <br />
+    &ensp;<input type="radio" name="show-stats-notifications" id="show-stats-notifications-true" value="true"> Yes
+    &ensp;<input type="radio" name="show-stats-notifications" id="show-stats-notifications-false" value="false"> No <br><br> -->
+    
+
+    <br>
+    <div style="text-align: center">
+      <button id="submit-btn" class="mod-primary">Save</button>&ensp;
+      <button id="logout-btn" class="mod-danger">Log out</button>
+    </div>
   </body>
 </html>
