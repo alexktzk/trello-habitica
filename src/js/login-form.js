@@ -12,16 +12,19 @@ export default class LoginForm {
     this.api = api;
   }
 
-  initialize() {
+  async initialize() {
     this.initializeElements();
-
-    this.t.loadSecret('userId').then(val => this.setUserId(val));
-    this.t.loadSecret('apiToken').then(val => this.setApiToken(val));
-
+    this.listenToClear();
     this.listenToSubmit();
+
+    return Promise.all([
+      this.t.loadSecret('userId').then(val => this.setUserId(val)),
+      this.t.loadSecret('apiToken').then(val => this.setApiToken(val))
+    ]);
   }
 
   initializeElements() {
+    this.$clearButton = document.getElementById('clear-btn');
     this.$submitButton = document.getElementById('submit-btn');
     this.$userId = document.getElementById('user-id');
     this.$apiToken = document.getElementById('api-token');
@@ -35,8 +38,21 @@ export default class LoginForm {
     this.$apiToken.value = val;
   }
 
+  listenToClear() {
+    this.$clearButton.addEventListener('click', () => this.handleClear());
+  }
+
   listenToSubmit() {
     this.$submitButton.addEventListener('click', () => this.handleSubmit());
+  }
+
+  async handleClear() {
+    this.$clearButton.disabled = true;
+
+    return Promise.all([
+      this.t.clearSecret('userId'),
+      this.t.clearSecret('apiToken')
+    ]).then(() => this.t.closePopup());
   }
 
   async handleSubmit() {
@@ -48,12 +64,12 @@ export default class LoginForm {
     ]);
 
     return this.api.getUserProfile().then(res => {
-      return this.storage
-        .setUser({
-          name: res.data.profile.name,
-          loggedIn: true
-        })
-        .then(() => this.t.closePopup());
+      const userParams = {
+        name: res.data.profile.name,
+        loggedIn: true
+      };
+
+      return this.storage.setUser(userParams).then(() => this.t.closePopup());
     });
   }
 }
