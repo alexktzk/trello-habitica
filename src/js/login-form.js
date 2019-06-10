@@ -1,15 +1,18 @@
 import Storage from './storage';
 import HabiticaApi from './habitica-api';
+import User from './user';
 
 export default class LoginForm {
   constructor(
     trello,
     storage = new Storage(trello),
-    api = new HabiticaApi(trello)
+    api = new HabiticaApi(trello),
+    user = new User(trello)
   ) {
     this.t = trello;
     this.storage = storage;
     this.api = api;
+    this.user = user;
   }
 
   async initialize() {
@@ -63,13 +66,16 @@ export default class LoginForm {
       this.t.storeSecret('apiToken', this.$apiToken.value)
     ]);
 
-    return this.api.getUserProfile().then(res => {
+    return this.api.getUser().then(res => {
       const userParams = {
         name: res.data.profile.name,
         loggedIn: true
       };
 
-      return this.storage.setUser(userParams).then(() => this.t.closePopup());
+      return this.storage
+        .setUser(userParams)
+        .then(() => this.user.updateStats(res.data.stats))
+        .then(() => this.t.closePopup());
     });
   }
 }

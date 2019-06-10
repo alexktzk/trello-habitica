@@ -401,7 +401,7 @@ describe('HabiticaApi class', () => {
     });
   });
 
-  describe('.getUserProfile()', () => {
+  describe('.getUser()', () => {
     const t = {};
     const storage = {};
     let API;
@@ -412,7 +412,7 @@ describe('HabiticaApi class', () => {
     });
 
     it('starts request to proper url', () => {
-      API.getUserProfile();
+      API.getUser();
       expect(API.request).toBeCalledWith(
         expect.stringContaining('/user?userFields='),
         expect.anything()
@@ -420,7 +420,7 @@ describe('HabiticaApi class', () => {
     });
 
     it('starts request with proper method type', () => {
-      API.getUserProfile();
+      API.getUser();
       expect(API.request).toBeCalledWith(
         expect.anything(),
         expect.objectContaining({

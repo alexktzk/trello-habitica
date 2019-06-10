@@ -82,14 +82,8 @@ export default class HabiticaApi {
     });
   }
 
-  getUserProfile() {
-    return this.request('/user?userFields=profile', {
-      method: 'GET'
-    });
-  }
-
-  getUserStats() {
-    return this.request('/user?userFields=stats', {
+  getUser() {
+    return this.request('/user?userFields=profile,stats', {
       method: 'GET'
     });
   }
