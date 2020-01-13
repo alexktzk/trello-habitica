@@ -15,8 +15,8 @@ export default class LoginForm {
   initialize() {
     this.initializeElements();
 
-    this.t.loadSecret('userId').then(val => this.setUserId(val));
-    this.t.loadSecret('apiToken').then(val => this.setApiToken(val));
+    this.t.get('board','private','userId','').then(val => this.setUserId(val));
+    this.t.get('board','private','apiToken','').then(val => this.setApiToken(val));
 
     this.listenToSubmit();
   }
@@ -43,8 +43,8 @@ export default class LoginForm {
     this.$submitButton.disabled = true;
 
     await Promise.all([
-      this.t.storeSecret('userId', this.$userId.value),
-      this.t.storeSecret('apiToken', this.$apiToken.value)
+      this.t.set('board','private','userId', this.$userId.value),
+      this.t.set('board','private','apiToken', this.$apiToken.value)
     ]);
 
     return this.api.getUserProfile().then(res => {

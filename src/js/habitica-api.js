@@ -21,8 +21,8 @@ export default class HabiticaApi {
 
   async authHeaders() {
     return {
-      'x-api-user': await this.t.loadSecret('userId'),
-      'x-api-key': await this.t.loadSecret('apiToken'),
+      'x-api-user': await this.t.get('board','private','userId',''),
+      'x-api-key': await this.t.get('board','private','apiToken',''),
       'Content-Type': 'application/json'
     };
   }
