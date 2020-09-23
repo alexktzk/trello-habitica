@@ -24,7 +24,8 @@ export default class Task {
     return {
       type: 'todo',
       priority: settings.priority,
-      text: `### ${icon}${card.name}`,
+      //text: `### ${icon}${card.name}`,
+      text: `${card.name}`,
       notes: `[Open in Trello](${cardUrl})`
     };
   }
