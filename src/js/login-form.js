@@ -12,12 +12,9 @@ export default class LoginForm {
     this.api = api;
   }
 
-  initialize() {
+  async initialize() {
     this.initializeElements();
-
-    this.t.get('board', 'private', 'userId').then(val => this.setUserId(val));
-    this.t.get('board', 'private', 'apiToken').then(val => this.setApiToken(val));
-
+    this.assignValues();
     this.listenToSubmit();
   }
 
@@ -25,6 +22,21 @@ export default class LoginForm {
     this.$submitButton = document.getElementById('submit-btn');
     this.$userId = document.getElementById('user-id');
     this.$apiToken = document.getElementById('api-token');
+    this.$secureCredentials = document.getElementById('secure-credentials');
+  }
+
+  async assignValues() {
+    const { secureCredentials } = await this.storage.getSettings()
+
+    this.$userId.value = secureCredentials 
+        ? await this.t.loadSecret('userId') 
+        : await this.t.get('board', 'private', 'userId', '')
+
+    this.$apiToken.value = secureCredentials 
+        ? await this.t.loadSecret('apiToken') 
+        : await this.t.get('board', 'private', 'apiToken', '')
+
+    this.$secureCredentials.checked = secureCredentials
   }
 
   setUserId(val) {
@@ -42,10 +54,21 @@ export default class LoginForm {
   async handleSubmit() {
     this.$submitButton.disabled = true;
 
-    await Promise.all([
-      this.t.set('board', 'private', 'userId', this.$userId.value),
-      this.t.set('board','private', 'apiToken', this.$apiToken.value)
-    ]);
+    const secureCredentials = this.$secureCredentials.checked
+
+    await this.storage.setSettings({ secureCredentials })
+
+    if (secureCredentials) {
+      await this.t.storeSecret('userId', this.$userId.value)
+      await this.t.storeSecret('apiToken', this.$apiToken.value)
+      this.t.remove('board', 'private', 'userId')
+      this.t.remove('board', 'private', 'apiToken')
+    } else {
+      await this.t.set('board', 'private', 'userId', this.$userId.value)
+      await this.t.set('board', 'private', 'apiToken', this.$apiToken.value)
+      this.t.clearSecret('userId')
+      this.t.clearSecret('apiToken')
+    }
 
     return this.api.getUserProfile().then(res => {
       return this.storage

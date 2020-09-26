@@ -60,7 +60,8 @@ export default class Storage {
       prependIcon: true,
       showBadges: true,
       showStats: true,
-      showStatsNotifications: true
+      showStatsNotifications: true,
+      secureCredentials: true
     };
     return this.t.get('board', 'private', 'settings', {}).then(settings => {
       return Object.assign({}, defaultSettings, settings);
