@@ -62,7 +62,7 @@ In order to test your code directly on a Trello board you should obtain a public
 $ ngrok http 8080
 ```
 
-This command will generate 2 public urls for you, http and https. \
+This command generates 2 public urls, http and https. \
 Trello allows to serve Power-Ups only over https.
 
 Once you've done just grab your public url and pass it to the Power-Up form as **Iframe connector URL**.
