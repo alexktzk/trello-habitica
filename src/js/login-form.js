@@ -15,8 +15,8 @@ export default class LoginForm {
   initialize() {
     this.initializeElements();
 
-    this.t.get('board', 'private', 'userId').then(val => this.setUserId(val));
-    this.t.get('board', 'private', 'apiToken').then(val => this.setApiToken(val));
+    this.t.get('board', 'private', 'userIdd', '').then(val => this.setUserId(val));
+    this.t.get('board', 'private', 'apiTokend', '').then(val => this.setApiToken(val));
 
     this.listenToSubmit();
   }
