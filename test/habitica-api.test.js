@@ -181,7 +181,7 @@ describe('HabiticaApi class', () => {
         userId: 'qwer',
         apiToken: 'asdf'
       };
-      t.loadSecret = jest.fn(async key => secrets[key]);
+      t.get = jest.fn(async (...keys) => secrets[keys.pop()]);
     });
 
     beforeEach(() => {
@@ -190,12 +190,12 @@ describe('HabiticaApi class', () => {
 
     it('loads user id from local storage', async () => {
       await API.authHeaders();
-      expect(API.t.loadSecret).toBeCalledWith('userId');
+      expect(API.t.get).toBeCalledWith('board', 'private', 'userId');
     });
 
     it('loads api token from local storage', async () => {
       await API.authHeaders();
-      expect(API.t.loadSecret).toBeCalledWith('apiToken');
+      expect(API.t.get).toBeCalledWith('board', 'private', 'apiToken');
     });
 
     it('returns proper headers', async () => {
