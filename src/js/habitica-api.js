@@ -20,9 +20,15 @@ export default class HabiticaApi {
   }
 
   async authHeaders() {
+    const { secureCredentials } = await this.storage.getSettings();
+
     return {
-      'x-api-user': await this.t.get('board', 'private', 'userId', ''),
-      'x-api-key': await this.t.get('board', 'private', 'apiToken', ''),
+      'x-api-user': secureCredentials 
+        ? await this.t.loadSecret('userId')
+        : await this.t.get('board', 'private', 'userId', ''),
+      'x-api-key': secureCredentials
+        ? await this.t.loadSecret('apiToken')
+        : await this.t.get('board', 'private', 'apiToken', ''),
       'Content-Type': 'application/json'
     };
   }

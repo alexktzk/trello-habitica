@@ -3,6 +3,20 @@
   <head>
     <link rel="stylesheet" href="https://p.trellocdn.com/power-up.min.css" />
     <script src="https://p.trellocdn.com/power-up.min.js"></script>
+    <style rel="stylesheet">
+      #tip {
+        display: none;
+        white-space: pre-line; 
+      }
+
+      #toggle-tip {
+        float: right;
+      }
+
+      label {
+        display: inline;
+      }
+    </style>
   </head>
   <body>
     <h3>API</h3>
@@ -12,9 +26,29 @@
 
     <input id="user-id" type="text" placeholder="User ID" />
     <input id="api-token" type="password" placeholder="API Token" />
+    <div>
+      <label><input type="checkbox" id="secure-credentials" /> &ensp; Secure credentials</label>
+      <a id="toggle-tip" href="#">(?)</a>
+    </div>
+    
+    <div id="tip" >
+      - Enabled: User ID and API Token are stored locally in your browser in encrypted state.
+      Secure, but requires to enter Habitica login credentials in each browser.
 
-    User ID and API Token are stored in your browser and not shared with Trello
-    or anyone else. <br /><br />
+      - Disabled: User ID and API Token are stored in Trello storage bound to your account.
+      Less secure, but preserves Habitica login credentials even when switch between browsers.
+
+    </div>
+
     <button id="submit-btn" type="submit" class="mod-primary">Log in</button>
+
+    <script>
+      document.getElementById('toggle-tip').addEventListener('click', () => {
+        const $tip = document.getElementById('tip')
+        const display = $tip.style.display
+
+        $tip.style.display = display == 'block' ? 'none' : 'block'
+      });
+    </script>
   </body>
 </html>

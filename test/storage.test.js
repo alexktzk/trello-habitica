@@ -277,7 +277,8 @@ describe('Storage class', () => {
         prependIcon: false,
         showBadges: true,
         showStats: true,
-        showStatsNotifications: true
+        showStatsNotifications: true,
+        secureCredentials: true
       };
       t.get = jest.fn(async () => settingsData);
     });
