@@ -61,7 +61,8 @@ export default class Storage {
       showBadges: true,
       showStats: true,
       showStatsNotifications: true,
-      secureCredentials: true
+      secureCredentials: true,
+      includeLink: true
     };
     return this.t.get('board', 'private', 'settings', {}).then(settings => {
       return Object.assign({}, defaultSettings, settings);

@@ -1,6 +1,6 @@
 /* eslint-disable class-methods-use-this */
 
-import Storage from './storage';
+import Storage from "./storage";
 
 export default class SettingsForm {
   constructor(trello, storage = new Storage(trello)) {
@@ -16,35 +16,37 @@ export default class SettingsForm {
   }
 
   initializeElements() {
-    this.$scope = document.getElementById('scope');
-    this.$priority = document.getElementById('priority');
-    this.$prependIcon = document.getElementById('prepend-icon');
-    this.$showBadges = document.getElementById('show-badges');
-    this.$showStats = document.getElementById('show-stats');
-    this.$submitButton = document.getElementById('submit-btn');
-    this.$logoutButton = document.getElementById('logout-btn');
+    this.$scope = document.getElementById("scope");
+    this.$priority = document.getElementById("priority");
+    this.$prependIcon = document.getElementById("prepend-icon");
+    this.$showBadges = document.getElementById("show-badges");
+    this.$showStats = document.getElementById("show-stats");
+    this.$submitButton = document.getElementById("submit-btn");
+    this.$logoutButton = document.getElementById("logout-btn");
     this.$showStatsNotifications = document.getElementById(
-      'show-stats-notifications'
+      "show-stats-notifications"
     );
+    this.$includeLink = document.getElementById("include-link");
   }
 
   assignValues() {
-    return this.storage.getSettings().then(async settings => {
+    return this.storage.getSettings().then(async (settings) => {
       this.$scope.value = settings.scope;
       this.$priority.value = settings.priority;
       this.$prependIcon.checked = settings.prependIcon;
       this.$showBadges.checked = settings.showBadges;
       this.$showStats.checked = settings.showStats;
       this.$showStatsNotifications.checked = settings.showStatsNotifications;
+      this.$includeLink.checked = settings.includeLink;
     });
   }
 
   listenToSubmit() {
-    this.$submitButton.addEventListener('click', () => this.handleSubmit());
+    this.$submitButton.addEventListener("click", () => this.handleSubmit());
   }
 
   listenToLogout() {
-    this.$logoutButton.addEventListener('click', () => this.handleLogout());
+    this.$logoutButton.addEventListener("click", () => this.handleLogout());
   }
 
   handleSubmit() {
@@ -57,7 +59,8 @@ export default class SettingsForm {
         prependIcon: this.$prependIcon.checked,
         showBadges: this.$showBadges.checked,
         showStats: this.$showStats.checked,
-        showStatsNotifications: this.$showStatsNotifications.checked
+        showStatsNotifications: this.$showStatsNotifications.checked,
+        includeLink: this.$includeLink.checked,
       })
       .then(() => this.t.closePopup());
   }
