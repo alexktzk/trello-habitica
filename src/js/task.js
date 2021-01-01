@@ -20,17 +20,22 @@ export default class Task {
     const cardUrl = `https://trello.com/c/${card.shortLink}`;
     const settings = await this.storage.getSettings();
     const icon = settings.prependIcon ? `![](${ICONS.TRELLO_LOGO})&ensp;` : '';
+    const notesLink = settings.includeLink ? `[Open in Trello](${cardUrl})` : '';
+    const notesDesc = settings.includeDesc ? `${card.desc}` : '';
+    const dueDate = card.due != null ? `${card.due}` : '';
+    const notesNewLine = card.desc.length > 0 && settings.includeLink ? `  \n` : '';
 
     return {
       type: 'todo',
       priority: settings.priority,
       text: `${icon}${card.name}`,
-      notes: `[Open in Trello](${cardUrl})`
+      notes: `${notesDesc}${notesNewLine}${notesLink}`,
+      date: `${dueDate}`,
     };
   }
 
   async handleAdd() {
-    const card = await this.t.card('name', 'shortLink');
+    const card = await this.t.card('name', 'shortLink', 'due', 'desc');
     const params = await this.getTemplate(card);
 
     return this.API.addTask(params).then(res =>
@@ -38,7 +43,8 @@ export default class Task {
         id: res.data.id,
         text: res.data.text,
         notes: res.data.notes,
-        priority: res.data.priority
+        priority: res.data.priority,
+        date: res.data.date,
       })
     );
   }
