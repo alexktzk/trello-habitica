@@ -1,6 +1,6 @@
 /* eslint-disable class-methods-use-this */
 
-import Storage from "./storage";
+import Storage from './storage';
 
 export default class SettingsForm {
   constructor(trello, storage = new Storage(trello)) {
@@ -16,17 +16,17 @@ export default class SettingsForm {
   }
 
   initializeElements() {
-    this.$scope = document.getElementById("scope");
-    this.$priority = document.getElementById("priority");
-    this.$prependIcon = document.getElementById("prepend-icon");
-    this.$showBadges = document.getElementById("show-badges");
-    this.$showStats = document.getElementById("show-stats");
-    this.$submitButton = document.getElementById("submit-btn");
-    this.$logoutButton = document.getElementById("logout-btn");
+    this.$scope = document.getElementById('scope');
+    this.$priority = document.getElementById('priority');
+    this.$prependIcon = document.getElementById('prepend-icon');
+    this.$showBadges = document.getElementById('show-badges');
+    this.$showStats = document.getElementById('show-stats');
+    this.$submitButton = document.getElementById('submit-btn');
+    this.$logoutButton = document.getElementById('logout-btn');
     this.$showStatsNotifications = document.getElementById(
-      "show-stats-notifications"
+      'show-stats-notifications'
     );
-    this.$includeLink = document.getElementById("include-link");
+    this.$includeLink = document.getElementById('include-link');
   }
 
   assignValues() {
@@ -42,11 +42,11 @@ export default class SettingsForm {
   }
 
   listenToSubmit() {
-    this.$submitButton.addEventListener("click", () => this.handleSubmit());
+    this.$submitButton.addEventListener('click', () => this.handleSubmit());
   }
 
   listenToLogout() {
-    this.$logoutButton.addEventListener("click", () => this.handleLogout());
+    this.$logoutButton.addEventListener('click', () => this.handleLogout());
   }
 
   handleSubmit() {
