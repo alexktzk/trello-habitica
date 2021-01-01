@@ -21,6 +21,7 @@ export default class Task {
     const settings = await this.storage.getSettings();
     const icon = settings.prependIcon ? `![](${ICONS.TRELLO_LOGO})&ensp;` : '';
     const notesLink = settings.includeLink ? `[Open in Trello](${cardUrl})` : '';
+    const notesDesc = settings.includeDesc ? `${card.desc}` : '';
     const dueDate = card.due != null ? `${card.due}` : '';
     const notesNewLine = card.desc.length > 0 && settings.includeLink ? `  \n` : '';
 
@@ -28,7 +29,7 @@ export default class Task {
       type: 'todo',
       priority: settings.priority,
       text: `${icon}${card.name}`,
-      notes: `${card.desc}${notesNewLine}${notesLink}`,
+      notes: `${notesDesc}${notesNewLine}${notesLink}`,
       date: `${dueDate}`,
     };
   }

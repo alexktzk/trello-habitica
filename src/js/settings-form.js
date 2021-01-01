@@ -27,6 +27,7 @@ export default class SettingsForm {
       'show-stats-notifications'
     );
     this.$includeLink = document.getElementById('include-link');
+    this.$includeDesc = document.getElementById('include-desc');
   }
 
   assignValues() {
@@ -38,6 +39,7 @@ export default class SettingsForm {
       this.$showStats.checked = settings.showStats;
       this.$showStatsNotifications.checked = settings.showStatsNotifications;
       this.$includeLink.checked = settings.includeLink;
+      this.$includeDesc.checked = settings.includeDesc;
     });
   }
 
@@ -61,6 +63,7 @@ export default class SettingsForm {
         showStats: this.$showStats.checked,
         showStatsNotifications: this.$showStatsNotifications.checked,
         includeLink: this.$includeLink.checked,
+        includeDesc: this.$includeDesc.checked,
       })
       .then(() => this.t.closePopup());
   }
