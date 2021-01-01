@@ -30,7 +30,7 @@ export default class SettingsForm {
   }
 
   assignValues() {
-    return this.storage.getSettings().then(async (settings) => {
+    return this.storage.getSettings().then(async settings => {
       this.$scope.value = settings.scope;
       this.$priority.value = settings.priority;
       this.$prependIcon.checked = settings.prependIcon;
