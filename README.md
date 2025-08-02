@@ -1,3 +1,8 @@
+# DEPRECATED
+This integration is no longer being maintained.
+
+--- 
+
 ## [Trello](https://trello.com) Integration with [Habitica](https://habitica.com)
 
 This Power-Up([?](https://trello.com/en/guide/power-up-productivity)) will keep your Trello cards in sync with Habitica. **No coding is required**; just fill in the form and you're all set!
