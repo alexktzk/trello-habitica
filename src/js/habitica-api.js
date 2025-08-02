@@ -22,11 +22,13 @@ export default class HabiticaApi {
   async authHeaders() {
     const { secureCredentials } = await this.storage.getSettings();
 
-    return {
-      'x-client': 'cb33f0a3-a78d-4435-8b0c-c305e4ae89e3-Trello-Habitica',
-      'x-api-user': secureCredentials 
+    const userID = secureCredentials
         ? await this.t.loadSecret('userId')
-        : await this.t.get('board', 'private', 'userId', ''),
+        : await this.t.get('board', 'private', 'userId', '');
+
+    return {
+      'x-client': `${userID}-trello-habitica`,
+      'x-api-user': userID,
       'x-api-key': secureCredentials
         ? await this.t.loadSecret('apiToken')
         : await this.t.get('board', 'private', 'apiToken', ''),
